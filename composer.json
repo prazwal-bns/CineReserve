@@ -1,0 +1,19 @@
+{
+    "name": "przwl/cine-reserve",
+    "description": "A seamless, user-friendly plugin for adding interactive movie seat selection and booking to any website.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Przwl\\CineReserve\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "prazwal-bns",
+            "email": "prajwalbns15@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
