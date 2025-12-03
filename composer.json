@@ -8,12 +8,17 @@
             "Przwl\\CineReserve\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "prazwal-bns",
-            "email": "prajwalbns15@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "prazwal-bns",
+        "email": "prajwalbns15@gmail.com"
+    }],
     "minimum-stability": "dev",
-    "require": {}
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Przwl\\CineReserve\\CineReserveServiceProvider"
+            ]
+        }
+    }
 }
