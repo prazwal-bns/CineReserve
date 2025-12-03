@@ -13,6 +13,8 @@ class CineReserveServiceProvider extends PackageServiceProvider
     {
         $package->name(self::$name)
             ->hasViews()
+            ->hasAssets()
+            ->hasTranslations()
             ->hasConfigFile();
     }
 
