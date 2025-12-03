@@ -10,6 +10,9 @@ class CineReserveServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
-        throw new \Exception('Not implemented');
+    }
+
+    public function packageBooted()
+    {
     }
 }
