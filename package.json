@@ -22,5 +22,9 @@
     "scripts": {
         "build": "npx @tailwindcss/cli -i ./resources/css/cine-reserve.css -o ./resources/dist/css/cine-reserve.css --build --minify && php ../../artisan filament:assets",
         "dev": "npx @tailwindcss/cli -i ./resources/css/cine-reserve.css -o ./resources/dist/css/cine-reserve.css --watch --minify"
+    },
+    "dependencies": {
+        "@tailwindcss/cli": "^4.1.17",
+        "tailwindcss": "^4.1.17"
     }
 }
