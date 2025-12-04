@@ -20,7 +20,7 @@
     "type": "commonjs",
     "main": "index.js",
     "scripts": {
-        "build": "npx @tailwindcss/cli -i ./resources/css/cine-reserve.css -o ./resources/dist/css/cine-reserve.css --build --minify && php ../../artisan filament:assets && cd -",
+        "build": "npx @tailwindcss/cli -i ./resources/css/cine-reserve.css -o ./resources/dist/css/cine-reserve.css --build --minify && php ../../artisan filament:assets",
         "dev": "npx @tailwindcss/cli -i ./resources/css/cine-reserve.css -o ./resources/dist/css/cine-reserve.css --watch --minify"
     }
 }

@@ -25,7 +25,7 @@ class CineReserveServiceProvider extends PackageServiceProvider
         parent::packageBooted();
 
         FilamentAsset::register([
-            Css::make('cine-reserve', __DIR__ . '/../resources/css/cine-reserve.css'),
+            Css::make('cine-reserve', __DIR__ . '/../resources/dist/css/cine-reserve.css'),
         ]);
     }
 }
