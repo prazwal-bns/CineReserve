@@ -1,0 +1,25 @@
+{
+    "name": "cinereserve",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [
+        "Cinema",
+        "Booking",
+        "Plugin"
+    ],
+    "homepage": "https://github.com/prazwal-bns/CineReserve#readme",
+    "bugs": {
+        "url": "https://github.com/prazwal-bns/CineReserve/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/prazwal-bns/CineReserve.git"
+    },
+    "license": "ISC",
+    "author": "Prajwal Banstola",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+}
