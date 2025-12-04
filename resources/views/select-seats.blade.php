@@ -1,19 +1,15 @@
 <x-filament-panels::page>
+    {{-- Movie Information (conditional) --}}
     @include('cine-reserve::movie-information')
+
     <div class="space-y-6">
         {{-- Seat Selection --}}
         <div class="bg-white dark:bg-[#08080a] rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-800">
 
-            <h3 class="text-2xl font-bold mb-8 text-gray-900 dark:text-white text-center">🍿 Select Your Seats</h3>
+            <h3 class="text-2xl font-bold mb-8 text-gray-900 dark:text-white text-center">{{ __('cine-reserve::cine-reserve.select_seats_title') }}</h3>
 
-            {{-- Screen Indicator --}}
-            <div class="mb-14">
-                <div class="w-full mx-auto">
-                    <div class="relative bg-gradient-to-b from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 h-12 rounded-b-full shadow-2xl flex items-center justify-center border-t-4 border-amber-500/50">
-                        <span class="text-gray-800 dark:text-gray-200 font-extrabold tracking-widest text-lg opacity-80">SCREEN</span>
-                    </div>
-                </div>
-            </div>
+            {{-- Screen Indicator (conditional) --}}
+            @include('cine-reserve::screen')
 
             {{-- Seat Grid --}}
             @php
@@ -48,6 +44,12 @@
                                 @php
                                     $isSelected = in_array($seat->id, $this->selectedSeats);
                                     $isBooked = in_array($seat->id, $this->bookedSeats);
+                                    
+                                    // Determine seat state
+                                    $state = $isBooked ? 'booked' : ($isSelected ? 'selected' : 'available');
+                                    
+                                    // Get color classes from component method
+                                    $colors = $this->getSeatColorClasses($state);
                                 @endphp
                                 <button 
                                     wire:click="toggleSeat({{ $seat->id }})" 
@@ -62,9 +64,7 @@
                                         {{-- Backrest --}}
                                         <div @class([
                                             'w-11 h-12 rounded-t-2xl relative overflow-hidden',
-                                            'bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 border-2 border-emerald-800' => !$isSelected && !$isBooked,
-                                            'bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 border-2 border-amber-700' => $isSelected,
-                                            'bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600 border-2 border-gray-700' => $isBooked,
+                                            $colors['backrest'],
                                         ])>
                                             {{-- Leather texture highlight --}}
                                             <div class="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/20"></div>
@@ -85,9 +85,7 @@
                                         {{-- Seat Base/Cushion --}}
                                         <div @class([
                                             'w-11 h-4 rounded-b-xl relative',
-                                            'bg-gradient-to-b from-emerald-600 to-emerald-800' => !$isSelected && !$isBooked,
-                                            'bg-gradient-to-b from-amber-500 to-amber-700' => $isSelected,
-                                            'bg-gradient-to-b from-gray-500 to-gray-700' => $isBooked,
+                                            $colors['base'],
                                         ])>
                                             {{-- Cushion highlight --}}
                                             <div class="absolute inset-x-1 top-0 h-1 bg-white/20 rounded-full"></div>
@@ -110,9 +108,7 @@
                                         {{-- Shadow --}}
                                         <div @class([
                                             'absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 rounded-full blur-sm',
-                                            'bg-emerald-900/40 dark:bg-emerald-900/60' => !$isSelected && !$isBooked,
-                                            'bg-amber-900/60 dark:bg-amber-900/80' => $isSelected,
-                                            'bg-gray-900/40 dark:bg-gray-900/60' => $isBooked,
+                                            $colors['shadow'],
                                         ])></div>
 
                                         {{-- Selection Indicator --}}
@@ -134,20 +130,37 @@
 
             {{-- Legend --}}
             <div class="mt-8 flex flex-wrap items-center gap-6 text-sm">
+                @php
+                    $legendColors = $this->getLegendColorClasses();
+                @endphp
                 <div class="flex items-center">
-                    <div class="w-5 h-5 bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg mr-3"></div>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">Available</span>
+                    <div class="w-5 h-5 {{ $legendColors['available']['bg'] }} border {{ $legendColors['available']['border'] }} rounded-lg mr-3"></div>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_available') }}</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-5 h-5 bg-amber-500 border border-amber-600 rounded-lg mr-3 shadow-sm"></div>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">Selected</span>
+                    <div class="w-5 h-5 {{ $legendColors['selected']['bg'] }} border {{ $legendColors['selected']['border'] }} rounded-lg mr-3 shadow-sm"></div>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_selected') }}</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-5 h-5 bg-gray-400 dark:bg-gray-500 border border-gray-500 dark:border-gray-400 rounded-lg mr-3"></div>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">Booked</span>
+                    <div class="w-5 h-5 {{ $legendColors['booked']['bg'] }} border {{ $legendColors['booked']['border'] }} rounded-lg mr-3"></div>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_booked') }}</span>
                 </div>
             </div>
         </div>
 
-        </div>
+        {{-- Proceed Button --}}
+        @if(!empty($this->selectedSeats))
+            <div class="mt-6 flex justify-end">
+                <x-filament::button 
+                    wire:click="proceed"
+                    icon="{{ config('cine-reserve.proceed_button.icon', 'heroicon-o-arrow-right') }}"
+                    size="lg"
+                >
+                    {{ config('cine-reserve.proceed_button.label', __('cine-reserve::cine-reserve.proceed_button')) }}
+                </x-filament::button>
+            </div>
+        @endif
+
+    </div>
 </x-filament-panels::page>
+

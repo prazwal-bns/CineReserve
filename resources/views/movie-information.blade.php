@@ -1,4 +1,4 @@
-{{-- Movie Information --}}
+@if(config('cine-reserve.show_movie_information', true))
 <div class="bg-white dark:bg-[#08080a] rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-800">
     <div class="flex items-center gap-6">
         <div class="w-32 h-48 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
@@ -13,3 +13,4 @@
         </div>
     </div>
 </div>
+@endif
