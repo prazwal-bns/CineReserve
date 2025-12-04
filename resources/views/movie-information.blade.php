@@ -1,5 +1,5 @@
 {{-- Movie Information --}}
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+<div class="bg-white dark:bg-[#08080a] rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-800">
     <div class="flex items-center gap-6">
         <div class="w-32 h-48 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
         <div>
