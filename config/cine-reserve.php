@@ -40,14 +40,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | Customize the colors for different seat states using Tailwind CSS color names.
-    | Available colors: emerald, amber, gray, blue, red, green, purple, etc.
+    | Available colors: amber, gray, red, green, purple, yellow
     | The plugin will generate gradient classes using these base colors.
     |
     */
     'seat_colors' => [
-        'available' => 'blue',  // Available seats
-        'selected' => 'amber',     // Selected seats
-        'booked' => 'gray',        // Booked seats
+        'available' => 'green',   // Available seats
+        'selected' => 'amber',    // Selected seats
+        'booked' => 'red',       // Booked seats
     ],
 
     /*
