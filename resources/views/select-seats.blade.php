@@ -62,10 +62,13 @@
                                     {{-- Seat Structure --}}
                                     <div class="relative">
                                         {{-- Backrest --}}
-                                        <div @class([
-                                            'w-11 h-12 rounded-t-2xl relative overflow-hidden',
-                                            $colors['backrest'],
-                                        ])>
+                                        <div 
+                                            @class([
+                                                'w-11 h-12 rounded-t-2xl relative overflow-hidden',
+                                                $colors['backrest']['class'],
+                                            ])
+                                            style="{{ $colors['backrest']['style'] }}"
+                                        >
                                             {{-- Leather texture highlight --}}
                                             <div class="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/20"></div>
                                             
@@ -83,10 +86,13 @@
                                         </div>
 
                                         {{-- Seat Base/Cushion --}}
-                                        <div @class([
-                                            'w-11 h-4 rounded-b-xl relative',
-                                            $colors['base'],
-                                        ])>
+                                        <div 
+                                            @class([
+                                                'w-11 h-4 rounded-b-xl relative',
+                                                $colors['base']['class'],
+                                            ])
+                                            style="{{ $colors['base']['style'] }}"
+                                        >
                                             {{-- Cushion highlight --}}
                                             <div class="absolute inset-x-1 top-0 h-1 bg-white/20 rounded-full"></div>
                                         </div>
@@ -105,11 +111,16 @@
                                             ])></div>
                                         </div>
 
-                                        {{-- Shadow --}}
-                                        <div @class([
-                                            'absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 rounded-full blur-sm',
-                                            $colors['shadow'],
-                                        ])></div>
+                                        {{-- Shadow (Light Mode) --}}
+                                        <div 
+                                            class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 rounded-full blur-sm dark:hidden"
+                                            style="{{ $colors['shadow']['style'] }}"
+                                        ></div>
+                                        {{-- Shadow (Dark Mode) --}}
+                                        <div 
+                                            class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 rounded-full blur-sm hidden dark:block"
+                                            style="{{ isset($colors['shadowDark']) ? $colors['shadowDark']['style'] : $colors['shadow']['style'] }}"
+                                        ></div>
 
                                         {{-- Selection Indicator --}}
                                         @if($isSelected)
@@ -134,15 +145,28 @@
                     $legendColors = $this->getLegendColorClasses();
                 @endphp
                 <div class="flex items-center">
-                    <div class="w-5 h-5 {{ $legendColors['available']['bg'] }} border {{ $legendColors['available']['border'] }} rounded-lg mr-3"></div>
+                    <div 
+                        class="w-5 h-5 rounded-lg mr-3 {{ $legendColors['available']['border']['class'] }}"
+                        style="{{ $legendColors['available']['bg']['style'] }} {{ $legendColors['available']['border']['style'] }}"
+                    ></div>
                     <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_available') }}</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-5 h-5 {{ $legendColors['selected']['bg'] }} border {{ $legendColors['selected']['border'] }} rounded-lg mr-3 shadow-sm"></div>
+                    <div 
+                        class="w-5 h-5 rounded-lg mr-3 shadow-sm {{ $legendColors['selected']['border']['class'] }}"
+                        style="{{ $legendColors['selected']['bg']['style'] }} {{ $legendColors['selected']['border']['style'] }}"
+                    ></div>
                     <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_selected') }}</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-5 h-5 {{ $legendColors['booked']['bg'] }} border {{ $legendColors['booked']['border'] }} rounded-lg mr-3"></div>
+                    <div 
+                        class="w-5 h-5 rounded-lg mr-3 border hidden dark:block"
+                        style="{{ $legendColors['booked']['bgDark']['style'] }} {{ $legendColors['booked']['borderDark']['style'] }}"
+                    ></div>
+                    <div 
+                        class="w-5 h-5 rounded-lg mr-3 border dark:hidden"
+                        style="{{ $legendColors['booked']['bg']['style'] }} {{ $legendColors['booked']['border']['style'] }}"
+                    ></div>
                     <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_booked') }}</span>
                 </div>
             </div>

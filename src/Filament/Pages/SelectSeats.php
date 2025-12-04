@@ -6,6 +6,7 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
+use Przwl\CineReserve\Support\SeatColorHelper;
 use UnitEnum;
 
 class SelectSeats extends Page
@@ -70,71 +71,21 @@ class SelectSeats extends Page
     }
 
     /**
-     * Get seat color classes based on state
-     * Returns full Tailwind class strings
-     * Note: For Tailwind to detect dynamic classes, users should add them to safelist
-     * or use the predefined color options in config
+     * Get seat color styles based on state
+     * Delegates to SeatColorHelper for cleaner code organization
      */
     public function getSeatColorClasses(string $state): array
     {
-        $color = config("cine-reserve.seat_colors.{$state}", 'gray');
-        
-        if ($state === 'available') {
-            return [
-                'backrest' => "bg-gradient-to-br from-{$color}-500 via-{$color}-600 to-{$color}-700 border-2 border-{$color}-800",
-                'base' => "bg-gradient-to-b from-{$color}-600 to-{$color}-800",
-                'shadow' => "bg-{$color}-900/40 dark:bg-{$color}-900/60",
-            ];
-        }
-        
-        if ($state === 'selected') {
-            return [
-                'backrest' => "bg-gradient-to-br from-{$color}-400 via-{$color}-500 to-{$color}-600 border-2 border-{$color}-700",
-                'base' => "bg-gradient-to-b from-{$color}-500 to-{$color}-700",
-                'shadow' => "bg-{$color}-900/60 dark:bg-{$color}-900/80",
-            ];
-        }
-        
-        if ($state === 'booked') {
-            return [
-                'backrest' => "bg-gradient-to-br from-{$color}-400 via-{$color}-500 to-{$color}-600 border-2 border-{$color}-700",
-                'base' => "bg-gradient-to-b from-{$color}-500 to-{$color}-700",
-                'shadow' => "bg-{$color}-900/40 dark:bg-{$color}-900/60",
-            ];
-        }
-        
-        // Default fallback
-        return [
-            'backrest' => "bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600 border-2 border-gray-700",
-            'base' => "bg-gradient-to-b from-gray-500 to-gray-700",
-            'shadow' => "bg-gray-900/40 dark:bg-gray-900/60",
-        ];
+        return SeatColorHelper::getSeatColorStyles($state);
     }
 
     /**
-     * Get legend color classes for display
-     * Returns full Tailwind class strings
+     * Get legend color styles for display
+     * Delegates to SeatColorHelper for cleaner code organization
      */
     public function getLegendColorClasses(): array
     {
-        $availableColor = config('cine-reserve.seat_colors.available', 'emerald');
-        $selectedColor = config('cine-reserve.seat_colors.selected', 'amber');
-        $bookedColor = config('cine-reserve.seat_colors.booked', 'gray');
-        
-        return [
-            'available' => [
-                'bg' => "bg-{$availableColor}-500",
-                'border' => "border-{$availableColor}-600",
-            ],
-            'selected' => [
-                'bg' => "bg-{$selectedColor}-500",
-                'border' => "border-{$selectedColor}-600",
-            ],
-            'booked' => [
-                'bg' => "bg-{$bookedColor}-400 dark:bg-{$bookedColor}-500",
-                'border' => "border-{$bookedColor}-500 dark:border-{$bookedColor}-400",
-            ],
-        ];
+        return SeatColorHelper::getLegendColorStyles();
     }
 
     /**
