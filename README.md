@@ -90,8 +90,12 @@ All configuration is done via `config/cine-reserve.php`:
 'proceed_button' => [
     'label' => 'Proceed to Booking',
     'icon' => 'heroicon-o-arrow-right',
+    'position' => 'right', // 'left' or 'right' - button alignment
+    'color' => 'primary',  // Filament button color: primary, success, warning, danger, gray, info
 ],
 ```
+
+**Available Colors**: `primary`, `success`, `warning`, `danger`, `gray`, `info`
 
 ## 🎨 Customization
 
