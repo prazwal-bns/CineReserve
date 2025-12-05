@@ -173,17 +173,7 @@
         </div>
 
         {{-- Proceed Button --}}
-        @if(!empty($this->selectedSeats))
-            <div class="mt-6 flex justify-end">
-                <x-filament::button 
-                    wire:click="proceed"
-                    icon="{{ config('cine-reserve.proceed_button.icon', 'heroicon-o-arrow-right') }}"
-                    size="lg"
-                >
-                    {{ config('cine-reserve.proceed_button.label', __('cine-reserve::cine-reserve.proceed_button')) }}
-                </x-filament::button>
-            </div>
-        @endif
+        @include('cine-reserve::proceed-button')
 
     </div>
 </x-filament-panels::page>
