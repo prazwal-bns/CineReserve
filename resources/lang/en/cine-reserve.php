@@ -6,5 +6,6 @@ return [
     'legend_available' => 'Available',
     'legend_selected' => 'Selected',
     'legend_booked' => 'Booked',
+    'proceed_button' => 'Proceed to Booking',
 ];
 
