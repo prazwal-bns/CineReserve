@@ -62,5 +62,9 @@ return [
     'proceed_button' => [
         'label' => 'Proceed to Booking',
         'icon' => 'heroicon-o-arrow-right',
+        'position' => 'left', // 'left' or 'right'
+        'color' => 'primary',  // Filament button color: primary, success, warning, danger, gray, info
+        'text_color' => 'text-white', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
+        'icon_position' => 'after', // 'before' or 'after'
     ],
 ];
