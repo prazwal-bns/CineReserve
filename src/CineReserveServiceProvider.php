@@ -4,7 +4,9 @@ namespace Przwl\CineReserve;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Przwl\CineReserve\View\Components\MovieInformation;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -35,6 +37,9 @@ class CineReserveServiceProvider extends PackageServiceProvider
             __DIR__ . '/../config/cine-reserve-colors.php',
             'cine-reserve-colors'
         );
+
+        // Register Blade component (no need to publish views)
+        Blade::component('cine-reserve::movie-information', MovieInformation::class);
 
         FilamentAsset::register([
             Css::make('cine-reserve', __DIR__ . '/../resources/dist/css/cine-reserve.css'),
