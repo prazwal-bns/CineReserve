@@ -13,6 +13,18 @@ class SelectSeats extends Page
     public $selectedSeats = [];
     public $bookedSeats = [];
     
+    // Movie information properties (users can set these dynamically)
+    public $moviePosterUrl = null;
+    public $movieTitle = null;
+    public $movieGenre = null;
+    public $movieDuration = null;
+    public $movieRating = null;
+    public $movieDate = null;
+    public $movieStartTime = null;
+    public $movieEndTime = null;
+    public $movieTheater = null;
+    public $moviePosterAlt = 'Movie poster';
+    
     protected string $view = 'cine-reserve::select-seats';
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-inbox-stack';
@@ -26,6 +38,33 @@ class SelectSeats extends Page
         // Initialize booked seats (example: seats 15, 16, 29 are booked)
         // Users can override this method or set bookedSeats from their own data source
         $this->bookedSeats = [15, 16, 29];
+        
+        // Movie information should be set by users in their own implementation
+        // Example: Load from database in mount() method
+        // $movie = Movie::find($movieId);
+        // $this->movieTitle = $movie->title;
+        // $this->moviePosterUrl = $movie->poster_url;
+        // etc...
+    }
+
+    /**
+     * Get movie information as an array for the component
+     * Users can override this method to customize how movie data is passed
+     */
+    public function getMovieInformation(): array
+    {
+        return [
+            'posterUrl' => $this->moviePosterUrl,
+            'title' => $this->movieTitle,
+            'genre' => $this->movieGenre,
+            'duration' => $this->movieDuration,
+            'rating' => $this->movieRating,
+            'date' => $this->movieDate,
+            'startTime' => $this->movieStartTime,
+            'endTime' => $this->movieEndTime,
+            'theater' => $this->movieTheater,
+            'posterAlt' => $this->moviePosterAlt,
+        ];
     }
 
     /**
@@ -164,14 +203,6 @@ class SelectSeats extends Page
      */
     public function proceed(): void
     {
-        if (empty($this->selectedSeats)) {
-            Notification::make()
-                ->title('Please select at least one seat')
-                ->danger()
-                ->send();
-            return;
-        }
-
         // Get selected seat details
         $selectedSeatDetails = $this->seats
             ->whereIn('id', $this->selectedSeats)

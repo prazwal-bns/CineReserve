@@ -1,6 +1,17 @@
 <x-filament-panels::page>
-    {{-- Movie Information (conditional) --}}
-    @include('cine-reserve::movie-information')
+    {{-- Movie Information Component --}}
+    <x-cine-reserve::movie-information
+        :poster-url="$this->moviePosterUrl"
+        :title="$this->movieTitle"
+        :genre="$this->movieGenre"
+        :duration="$this->movieDuration"
+        :rating="$this->movieRating"
+        :date="$this->movieDate"
+        :start-time="$this->movieStartTime"
+        :end-time="$this->movieEndTime"
+        :theater="$this->movieTheater"
+        :poster-alt="$this->moviePosterAlt"
+    />
 
     <div class="space-y-6">
         {{-- Seat Selection --}}
