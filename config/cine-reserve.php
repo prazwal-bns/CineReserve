@@ -72,10 +72,12 @@ return [
     */
     'proceed_button' => [
         'label' => 'Proceed to Booking',
+        'has_icon' => true,
         'icon' => 'heroicon-o-arrow-right',
-        'position' => 'right', // 'left' or 'right'
-        'color' => 'primary',  // Filament button color: primary, success, warning, danger, gray, info
-        'text_color' => 'text-white', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
         'icon_position' => 'after', // 'before' or 'after'
+        'color' => 'warning',  // Filament button color: primary, success, warning, danger, gray, info
+        'text_color' => 'text-white', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
+        'position' => 'right', // button position: 'left' or 'right'
+        'outlined' => false, // whether to use an outlined button
     ],
 ];
