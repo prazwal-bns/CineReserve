@@ -5,9 +5,11 @@ A seamless, user-friendly Filament plugin for adding interactive movie seat sele
 ## 🎬 Features
 
 - **Interactive Seat Selection**: Beautiful, animated seat selection interface
+- **Movie Information Display**: Showcase movie details with poster image support
 - **Customizable Colors**: Choose from 6 color options (amber, gray, red, green, purple, yellow)
 - **Dynamic Layout**: Configure rows and seats per row via config
 - **Conditional Display**: Toggle movie information and screen indicator
+- **View Publishing**: Publish views for complete customization
 - **Livewire Integration**: Emits events for easy booking integration
 - **Dark Mode Support**: Fully supports Filament's dark mode
 - **Responsive Design**: Works on all screen sizes
@@ -72,6 +74,60 @@ All configuration is done via `config/cine-reserve.php`:
 'seats_per_row' => 8,
 ```
 
+### Movie Information
+
+Movie information is handled by a dedicated `MovieInformation` Blade component. Set movie data **dynamically** in your `SelectSeats` component by setting the public properties.
+
+**Set movie data in your component:**
+
+```php
+use Przwl\CineReserve\Filament\Pages\SelectSeats;
+
+class MySelectSeats extends SelectSeats
+{
+    public function mount($movieId, $showtimeId): void
+    {
+        parent::mount();
+        
+        // Load movie data from your database
+        $movie = Movie::find($movieId);
+        $showtime = Showtime::find($showtimeId);
+        
+        // Set movie information properties
+        $this->movieTitle = $movie->title;
+        $this->moviePosterUrl = $movie->poster_url; // or Storage::url($movie->poster_path)
+        $this->movieGenre = $movie->genre;
+        $this->movieDuration = $movie->duration . ' min';
+        $this->movieRating = $movie->rating;
+        $this->movieDate = $showtime->date->format('F j, Y');
+        $this->movieTime = $showtime->time->format('g:i A');
+        $this->movieTheater = $showtime->theater->name;
+        $this->moviePosterAlt = $movie->title . ' poster';
+        
+        // Load booked seats for this showtime
+        $this->bookedSeats = Booking::where('showtime_id', $showtimeId)
+            ->pluck('seat_id')
+            ->toArray();
+    }
+}
+```
+
+**Available movie properties:**
+- `$moviePosterUrl` - URL or path to movie poster image
+- `$movieTitle` - Movie title
+- `$movieGenre` - Movie genre(s)
+- `$movieDuration` - Movie duration
+- `$movieRating` - Movie rating
+- `$movieDate` - Show date
+- `$movieTime` - Show time
+- `$movieTheater` - Theater name
+- `$moviePosterAlt` - Alt text for poster (default: 'Movie poster')
+
+**Note**: 
+- The `MovieInformation` component automatically handles display logic and only shows if `show_movie_information` is enabled in config and at least one property is set.
+- If `moviePosterUrl` is `null` or empty, a placeholder image will be displayed.
+- The poster supports both local paths (e.g., `/storage/posters/movie.jpg`) and external URLs.
+
 ### Color Customization
 
 ```php
@@ -133,7 +189,14 @@ Publish and customize views:
 php artisan vendor:publish --tag=cine-reserve-views
 ```
 
-Then edit `resources/views/vendor/cine-reserve/select-seats.blade.php`
+This will copy all views to `resources/views/vendor/cine-reserve/`. You can then customize:
+
+- `select-seats.blade.php` - Main seat selection page
+- `components/movie-information.blade.php` - Movie information component view
+- `screen.blade.php` - Screen indicator
+- `proceed-button.blade.php` - Proceed button component
+
+**Example**: To customize the movie information component, publish views and edit `resources/views/vendor/cine-reserve/components/movie-information.blade.php`.
 
 ### Overriding Translations
 
@@ -166,7 +229,7 @@ public function handleSeatSelection($data)
 }
 ```
 
-### Customizing Booked Seats
+### Setting Movie Information and Booked Seats
 
 Override the `mount()` method in your own page class, or extend `SelectSeats`:
 
@@ -175,12 +238,28 @@ use Przwl\CineReserve\Filament\Pages\SelectSeats;
 
 class MySelectSeats extends SelectSeats
 {
-    public function mount(): void
+    public function mount($movieId, $showtimeId): void
     {
         parent::mount();
         
-        // Load booked seats from your database
-        $this->bookedSeats = Booking::pluck('seat_id')->toArray();
+        // Load movie and showtime data
+        $movie = Movie::find($movieId);
+        $showtime = Showtime::find($showtimeId);
+        
+        // Set movie information
+        $this->movieTitle = $movie->title;
+        $this->moviePosterUrl = Storage::url($movie->poster_path);
+        $this->movieGenre = $movie->genre;
+        $this->movieDuration = $movie->duration . ' min';
+        $this->movieRating = $movie->rating;
+        $this->movieDate = $showtime->date->format('F j, Y');
+        $this->movieTime = $showtime->time->format('g:i A');
+        $this->movieTheater = $showtime->theater->name;
+        
+        // Load booked seats for this showtime
+        $this->bookedSeats = Booking::where('showtime_id', $showtimeId)
+            ->pluck('seat_id')
+            ->toArray();
     }
 }
 ```
@@ -210,8 +289,10 @@ packages/CineReserve/
 │   │       └── cine-reserve.php  # Translations
 │   ├── views/
 │   │   ├── select-seats.blade.php      # Main seat selection view
-│   │   ├── movie-information.blade.php # Movie info component
-│   │   └── screen.blade.php            # Screen indicator component
+│   │   ├── components/
+│   │   │   └── movie-information.blade.php # Movie info component view
+│   │   ├── screen.blade.php            # Screen indicator component
+│   │   └── proceed-button.blade.php    # Proceed button component
 │   ├── css/
 │   │   └── cine-reserve.css      # Custom CSS (Tailwind)
 │   └── dist/
@@ -241,10 +322,14 @@ packages/CineReserve/
 - Self-contained color palette
 - Generates inline styles to avoid Tailwind purge issues
 
-### Views
+### Views & Components
 - **select-seats.blade.php**: Main seat selection interface
-- **movie-information.blade.php**: Movie details display (optional)
+- **components/movie-information.blade.php**: Movie information Blade component (handles display logic)
 - **screen.blade.php**: Screen indicator (optional)
+- **proceed-button.blade.php**: Proceed/Submit button component
+
+### Components
+- **MovieInformation**: Blade component class (`Przwl\CineReserve\View\Components\MovieInformation`) that handles movie information display. Accepts movie data as parameters and manages display logic internally.
 
 ## 🚀 Events
 
