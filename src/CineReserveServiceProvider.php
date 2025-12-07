@@ -25,10 +25,15 @@ class CineReserveServiceProvider extends PackageServiceProvider
     {
         parent::packageBooted();
 
-        // Ensure config is loaded (for local development)
+        // Ensure configs are loaded (for local development)
         $this->mergeConfigFrom(
             __DIR__ . '/../config/cine-reserve.php',
             'cine-reserve'
+        );
+
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/cine-reserve-colors.php',
+            'cine-reserve-colors'
         );
 
         FilamentAsset::register([

@@ -6,7 +6,6 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
-use Przwl\CineReserve\Support\SeatColorHelper;
 use UnitEnum;
 
 class SelectSeats extends Page
@@ -71,21 +70,83 @@ class SelectSeats extends Page
     }
 
     /**
-     * Get seat color styles based on state
-     * Delegates to SeatColorHelper for cleaner code organization
+     * Get color RGB values for a state
      */
-    public function getSeatColorClasses(string $state): array
+    protected function getColorValues(string $state): array
     {
-        return SeatColorHelper::getSeatColorStyles($state);
+        $colorName = config("cine-reserve.seat_colors.{$state}", 'gray');
+        $palette = config('cine-reserve-colors', []);
+        
+        return $palette[$colorName] ?? $palette['gray'] ?? [
+            '400' => 'rgb(156, 163, 175)',
+            '500' => 'rgb(107, 114, 128)',
+            '600' => 'rgb(75, 85, 99)',
+            '700' => 'rgb(55, 65, 81)',
+            '800' => 'rgb(31, 41, 55)',
+            '900' => 'rgb(17, 24, 39)',
+        ];
     }
 
     /**
-     * Get legend color styles for display
-     * Delegates to SeatColorHelper for cleaner code organization
+     * Get seat color styles based on state
+     */
+    public function getSeatColorClasses(string $state): array
+    {
+        $colors = $this->getColorValues($state);
+        
+        return match($state) {
+            'available' => [
+                'backrest' => "background: linear-gradient(to bottom right, {$colors['500']}, {$colors['600']}, {$colors['700']}); border-color: {$colors['800']};",
+                'base' => "background: linear-gradient(to bottom, {$colors['600']}, {$colors['800']});",
+                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.4);",
+                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
+            ],
+            'selected' => [
+                'backrest' => "background: linear-gradient(to bottom right, {$colors['400']}, {$colors['500']}, {$colors['600']}); border-color: {$colors['700']};",
+                'base' => "background: linear-gradient(to bottom, {$colors['500']}, {$colors['700']});",
+                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
+                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.8);",
+            ],
+            'booked' => [
+                'backrest' => "background: linear-gradient(to bottom right, {$colors['400']}, {$colors['500']}, {$colors['600']}); border-color: {$colors['700']};",
+                'base' => "background: linear-gradient(to bottom, {$colors['500']}, {$colors['700']});",
+                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.4);",
+                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
+            ],
+            default => [
+                'backrest' => "background: linear-gradient(to bottom right, {$colors['400']}, {$colors['500']}, {$colors['600']}); border-color: {$colors['700']};",
+                'base' => "background: linear-gradient(to bottom, {$colors['500']}, {$colors['700']});",
+                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.4);",
+                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
+            ],
+        };
+    }
+
+    /**
+     * Get legend color styles
      */
     public function getLegendColorClasses(): array
     {
-        return SeatColorHelper::getLegendColorStyles();
+        $availableColors = $this->getColorValues('available');
+        $selectedColors = $this->getColorValues('selected');
+        $bookedColors = $this->getColorValues('booked');
+        
+        return [
+            'available' => [
+                'bg' => "background-color: {$availableColors['500']};",
+                'border' => "border-color: {$availableColors['600']};",
+            ],
+            'selected' => [
+                'bg' => "background-color: {$selectedColors['500']};",
+                'border' => "border-color: {$selectedColors['600']};",
+            ],
+            'booked' => [
+                'bg' => "background-color: {$bookedColors['400']};",
+                'bgDark' => "background-color: {$bookedColors['500']};",
+                'border' => "border-color: {$bookedColors['500']};",
+                'borderDark' => "border-color: {$bookedColors['400']};",
+            ],
+        ];
     }
 
     /**

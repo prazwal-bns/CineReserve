@@ -39,16 +39,27 @@ return [
     | Seat Colors
     |--------------------------------------------------------------------------
     |
-    | Customize the colors for different seat states using Tailwind CSS color names.
-    | Available colors: amber, gray, red, green, purple, yellow
-    | The plugin will generate gradient classes using these base colors.
+    | Customize the colors for different seat states.
+    | Use color names defined in 'color_palette' below.
+    | Default colors: green (available), amber (selected), gray (booked)
     |
     */
     'seat_colors' => [
-        'available' => 'green',   // Available seats
-        'selected' => 'amber',    // Selected seats
-        'booked' => 'red',       // Booked seats
+        'available' => 'green',
+        'selected' => 'red',
+        'booked' => 'gray',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Seat Colors
+    |--------------------------------------------------------------------------
+    |
+    | Select which colors to use for each seat state.
+    | Color names must exist in 'cine-reserve-colors.php' config file.
+    | Add custom colors in 'cine-reserve-colors.php', then reference them here.
+    |
+    */
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +73,7 @@ return [
     'proceed_button' => [
         'label' => 'Proceed to Booking',
         'icon' => 'heroicon-o-arrow-right',
-        'position' => 'left', // 'left' or 'right'
+        'position' => 'right', // 'left' or 'right'
         'color' => 'primary',  // Filament button color: primary, success, warning, danger, gray, info
         'text_color' => 'text-white', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
         'icon_position' => 'after', // 'before' or 'after'
