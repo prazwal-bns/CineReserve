@@ -17,7 +17,10 @@
         {{-- Seat Selection --}}
         <div class="bg-white dark:bg-[#08080a] rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-800">
 
-            <h3 class="text-2xl font-bold mb-8 text-gray-900 dark:text-white text-center">{{ __('cine-reserve::cine-reserve.select_seats_title') }}</h3>
+            @php
+                $selectSeatsTitlePosition = config('cine-reserve.select_seats_title_position', 'left');
+            @endphp
+            <h3 class="text-2xl font-bold mb-8 text-gray-900 dark:text-white {{ $selectSeatsTitlePosition === 'left' ? 'text-left' : ($selectSeatsTitlePosition === 'center' ? 'text-center' : 'text-right') }}">{{ __('cine-reserve::cine-reserve.select_seats_title') }}</h3>
 
             {{-- Screen Indicator (conditional) --}}
             @include('cine-reserve::screen')
