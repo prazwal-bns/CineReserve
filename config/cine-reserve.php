@@ -87,7 +87,7 @@ return [
         'icon' => 'heroicon-o-arrow-right',
         'icon_position' => 'after', // 'before' or 'after'
         'color' => 'warning',  // Filament button color: primary, success, warning, danger, gray, info
-        'text_color' => 'text-white', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
+        'text_color' => 'text-gray-900', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
         'position' => 'right', // button position: 'left' or 'right'
         'outlined' => false, // whether to use an outlined button
     ],

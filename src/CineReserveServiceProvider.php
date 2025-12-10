@@ -26,8 +26,7 @@ class CineReserveServiceProvider extends PackageServiceProvider
     public function packageBooted()
     {
         parent::packageBooted();
-
-        // Ensure configs are loaded (for local development)
+        
         $this->mergeConfigFrom(
             __DIR__ . '/../config/cine-reserve.php',
             'cine-reserve'
