@@ -216,7 +216,7 @@ class SelectSeats extends Page
             })
             ->values()
             ->toArray();
-
+            
         // Emit event with selected seats data
         $this->dispatch('seatSelected', [
             'selectedSeats' => $this->selectedSeats,

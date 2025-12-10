@@ -151,20 +151,24 @@
             <div class="mt-8 flex flex-wrap items-center gap-6 text-sm">
                 @php
                     $legendColors = $this->getLegendColorClasses();
+                    $totalSeats = $this->seats->count();
+                    $selectedCount = count($this->selectedSeats);
+                    $bookedCount = count($this->bookedSeats);
+                    $availableCount = $totalSeats - $bookedCount - $selectedCount;
                 @endphp
                 <div class="flex items-center">
                     <div 
                         class="w-5 h-5 rounded-lg mr-3 border"
                         style="{{ $legendColors['available']['bg'] }} {{ $legendColors['available']['border'] }}"
                     ></div>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_available') }}</span>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_available') }} <span class="font-semibold">({{ $availableCount }})</span></span>
                 </div>
                 <div class="flex items-center">
                     <div 
                         class="w-5 h-5 rounded-lg mr-3 border shadow-sm"
                         style="{{ $legendColors['selected']['bg'] }} {{ $legendColors['selected']['border'] }}"
                     ></div>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_selected') }}</span>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_selected') }} <span class="font-semibold">({{ $selectedCount }})</span></span>
                 </div>
                 <div class="flex items-center">
                     <div 
@@ -175,7 +179,7 @@
                         class="w-5 h-5 rounded-lg mr-3 border dark:hidden"
                         style="{{ $legendColors['booked']['bg'] }} {{ $legendColors['booked']['border'] }}"
                     ></div>
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_booked') }}</span>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">{{ __('cine-reserve::cine-reserve.legend_booked') }} <span class="font-semibold">({{ $bookedCount }})</span></span>
                 </div>
             </div>
         </div>
