@@ -3,6 +3,7 @@
     "description": "A seamless, user-friendly plugin for adding interactive movie seat selection and booking to any website.",
     "type": "library",
     "license": "MIT",
+    "version": "1.0.0",
     "autoload": {
         "psr-4": {
             "Przwl\\CineReserve\\": "src/"
