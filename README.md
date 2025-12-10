@@ -16,6 +16,13 @@ A seamless, user-friendly Filament plugin for adding interactive movie seat sele
 
 ## 📦 Installation
 
+### Requirements
+
+- PHP 8.1 or higher
+- Laravel 10.0 or higher
+- Filament 3.0 or higher
+- Livewire 3.0 or higher
+
 ### For Local Development (Current Setup)
 
 Since this is a local package, it's already set up via path repository in your main `composer.json`:
@@ -229,12 +236,13 @@ public function handleSeatSelection($data)
 }
 ```
 
-### Setting Movie Information and Booked Seats
+### Extending SelectSeats
 
-Override the `mount()` method in your own page class, or extend `SelectSeats`:
+The `SelectSeats` class is designed to be simple and easily overridable. Extend it to add your own validation, business logic, and data loading:
 
 ```php
 use Przwl\CineReserve\Filament\Pages\SelectSeats;
+use Filament\Notifications\Notification;
 
 class MySelectSeats extends SelectSeats
 {
@@ -264,6 +272,34 @@ class MySelectSeats extends SelectSeats
 }
 ```
 
+### Adding Validation
+
+Override `toggleSeat()` to add your own validation:
+
+```php
+use Filament\Notifications\Notification;
+
+public function toggleSeat($seatId): void
+{
+    $seatId = (int) $seatId;
+    
+    // Prevent selecting booked seats
+    if (in_array($seatId, $this->bookedSeats)) {
+        Notification::make()
+            ->title('Seat already booked')
+            ->danger()
+            ->send();
+        return;
+    }
+    
+    // Add your own validation logic here
+    // Example: Check max selection limit, validate seat exists, etc.
+    
+    // Call parent to handle toggle
+    parent::toggleSeat($seatId);
+}
+```
+
 ### Customizing Total Calculation
 
 Override the `calculateTotal()` method:
@@ -273,6 +309,30 @@ public function calculateTotal(): void
 {
     $pricePerSeat = 10.00;
     $this->total = count($this->selectedSeats) * $pricePerSeat;
+}
+```
+
+### Customizing Proceed Logic
+
+Override `proceed()` to add validation and custom behavior:
+
+```php
+public function proceed(): void
+{
+    // Add your validation
+    if (empty($this->selectedSeats)) {
+        Notification::make()
+            ->title('Please select at least one seat')
+            ->warning()
+            ->send();
+        return;
+    }
+    
+    // Call parent to emit event, or implement your own logic
+    parent::proceed();
+    
+    // Or redirect, save to database, etc.
+    // return redirect()->route('booking.checkout');
 }
 ```
 
@@ -350,6 +410,17 @@ Emitted when user clicks "Proceed to Booking" button.
 
 ### seat-selection-empty
 Emitted when user tries to proceed without selecting any seats (shows notification).
+
+## 🔧 Customization
+
+The `SelectSeats` class is intentionally simple. Override methods to add your own logic:
+
+- `mount()` - Load data, set movie info, initialize booked seats
+- `toggleSeat()` - Add validation, selection limits, business rules
+- `proceed()` - Add validation, redirect, save to database
+- `calculateTotal()` - Implement pricing logic
+
+See examples above in the "Extending SelectSeats" section.
 
 ## 🎨 Color System
 
