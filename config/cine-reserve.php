@@ -51,8 +51,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Customize the colors for different seat states.
-    | Use color names defined in 'color_palette' below.
-    | Default colors: green (available), amber (selected), gray (booked)
+    | Use color names defined in 'cine-reserve-colors.php' config file.
+    | Default colors: green (available), red (selected), gray (booked)
     |
     */
     'seat_colors' => [
@@ -60,17 +60,6 @@ return [
         'selected' => 'red',
         'booked' => 'gray',
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Seat Colors
-    |--------------------------------------------------------------------------
-    |
-    | Select which colors to use for each seat state.
-    | Color names must exist in 'cine-reserve-colors.php' config file.
-    | Add custom colors in 'cine-reserve-colors.php', then reference them here.
-    |
-    */
 
     /*
     |--------------------------------------------------------------------------

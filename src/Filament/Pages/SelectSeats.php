@@ -3,7 +3,6 @@
 namespace Przwl\CineReserve\Filament\Pages;
 
 use BackedEnum;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
 use UnitEnum;
@@ -13,7 +12,7 @@ class SelectSeats extends Page
     public $selectedSeats = [];
     public $bookedSeats = [];
     
-    // Movie information properties (users can set these dynamically)
+    // Movie information properties
     public $moviePosterUrl = null;
     public $movieTitle = null;
     public $movieGenre = null;
@@ -33,23 +32,16 @@ class SelectSeats extends Page
 
     protected static ?string $title = 'Select Seats';
 
+    /**
+     * Initialize component. Override to load your own data.
+     */
     public function mount(): void
     {
-        // Initialize booked seats (example: seats 15, 16, 29 are booked)
-        // Users can override this method or set bookedSeats from their own data source
-        $this->bookedSeats = [15, 16, 29];
-        
-        // Movie information should be set by users in their own implementation
-        // Example: Load from database in mount() method
-        // $movie = Movie::find($movieId);
-        // $this->movieTitle = $movie->title;
-        // $this->moviePosterUrl = $movie->poster_url;
-        // etc...
+        $this->bookedSeats = [15, 16, 29]; // Example: override this
     }
 
     /**
-     * Get movie information as an array for the component
-     * Users can override this method to customize how movie data is passed
+     * Get movie information array.
      */
     public function getMovieInformation(): array
     {
@@ -68,7 +60,7 @@ class SelectSeats extends Page
     }
 
     /**
-     * Generate seats dynamically from config
+     * Generate seats from config.
      */
     public function getSeatsProperty(): Collection
     {
@@ -95,21 +87,24 @@ class SelectSeats extends Page
     }
 
     /**
-     * Toggle seat selection
+     * Toggle seat selection. Override to add your own validation.
      */
     public function toggleSeat($seatId): void
     {
+        $seatId = (int) $seatId;
+        
         if (in_array($seatId, $this->selectedSeats)) {
             $this->selectedSeats = array_values(array_diff($this->selectedSeats, [$seatId]));
         } else {
             $this->selectedSeats[] = $seatId;
         }
-        $this->selectedSeats = array_values($this->selectedSeats); // Re-index array
+        
+        $this->selectedSeats = array_values($this->selectedSeats);
         $this->calculateTotal();
     }
 
     /**
-     * Get color RGB values for a state
+     * Get color RGB values for seat state.
      */
     protected function getColorValues(string $state): array
     {
@@ -127,7 +122,7 @@ class SelectSeats extends Page
     }
 
     /**
-     * Get seat color styles based on state
+     * Get seat color styles for state.
      */
     public function getSeatColorClasses(string $state): array
     {
@@ -162,7 +157,7 @@ class SelectSeats extends Page
     }
 
     /**
-     * Get legend color styles
+     * Get legend color styles.
      */
     public function getLegendColorClasses(): array
     {
@@ -189,21 +184,18 @@ class SelectSeats extends Page
     }
 
     /**
-     * Calculate total (placeholder for user implementation)
+     * Calculate total. Override to implement pricing logic.
      */
     public function calculateTotal(): void
     {
-        // Placeholder for total calculation
-        // Users can override this method to implement their own pricing logic
+        // Override this method
     }
 
     /**
-     * Proceed with selected seats
-     * Emits a Livewire event that users can listen to
+     * Proceed with booking. Override to add validation and custom logic.
      */
     public function proceed(): void
     {
-        // Get selected seat details
         $selectedSeatDetails = $this->seats
             ->whereIn('id', $this->selectedSeats)
             ->map(function ($seat) {
@@ -216,8 +208,7 @@ class SelectSeats extends Page
             })
             ->values()
             ->toArray();
-            
-        // Emit event with selected seats data
+        
         $this->dispatch('seatSelected', [
             'selectedSeats' => $this->selectedSeats,
             'seatDetails' => $selectedSeatDetails,
