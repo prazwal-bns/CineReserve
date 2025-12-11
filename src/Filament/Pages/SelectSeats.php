@@ -11,6 +11,9 @@ class SelectSeats extends Page
 {
     public $selectedSeats = [];
     public $bookedSeats = [];
+
+    // should show in navigation bar
+    protected static bool $shouldRegisterNavigation = false;
     
     // Movie information properties
     public $moviePosterUrl = null;
