@@ -15,7 +15,7 @@
         "type": "git",
         "url": "git+https://github.com/prazwal-bns/CineReserve.git"
     },
-    "license": "ISC",
+    "license": "MIT",
     "author": "Prajwal Banstola",
     "type": "commonjs",
     "main": "index.js",
