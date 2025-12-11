@@ -364,8 +364,9 @@ packages/CineReserve/
 │   │   ├── CineReserve.php       # Filament plugin class
 │   │   └── Pages/
 │   │       └── SelectSeats.php    # Main page class
-│   └── Support/
-│       └── SeatColorHelper.php    # Color helper class
+│   └── View/
+│       └── Components/
+│           └── MovieInformation.php    # Movie information Blade component
 ├── composer.json
 └── README.md
 ```
@@ -376,11 +377,6 @@ packages/CineReserve/
 - Main Filament page for seat selection
 - Handles seat toggling, selection state, and booking logic
 - Emits `seatSelected` event on proceed
-
-### SeatColorHelper
-- Manages all color-related logic
-- Self-contained color palette
-- Generates inline styles to avoid Tailwind purge issues
 
 ### Views & Components
 - **select-seats.blade.php**: Main seat selection interface
@@ -424,7 +420,7 @@ See examples above in the "Extending SelectSeats" section.
 
 ## 🎨 Color System
 
-The plugin uses inline styles with RGB values to avoid Tailwind CSS purge issues. Colors are defined in `SeatColorHelper` class and can be customized via config.
+The plugin uses inline styles with RGB values to avoid Tailwind CSS purge issues. Colors are defined in `cine-reserve-colors.php` config file and can be customized.
 
 **Supported Colors:**
 - `amber` - Warm yellow/orange
