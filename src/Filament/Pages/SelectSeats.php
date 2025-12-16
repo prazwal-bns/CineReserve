@@ -217,5 +217,20 @@ class SelectSeats extends Page
             'seatDetails' => $selectedSeatDetails,
             'count' => count($this->selectedSeats),
         ]);
+
+        // Call hook method for custom booking logic
+        $this->handleBooking($selectedSeatDetails);
+    }
+
+    /**
+     * Handle booking after seat selection.
+     * Override this method to add your booking logic (save to database, send notifications, etc.).
+     *
+     * @param array $selectedSeatDetails Array of selected seat details with id, row, number, and label
+     * @return void
+     */
+    protected function handleBooking(array $selectedSeatDetails): void
+    {
+        dd($selectedSeatDetails);
     }
 }
