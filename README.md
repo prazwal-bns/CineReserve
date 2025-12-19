@@ -107,7 +107,8 @@ class MySelectSeats extends SelectSeats
         $this->movieDuration = $movie->duration . ' min';
         $this->movieRating = $movie->rating;
         $this->movieDate = $showtime->date->format('F j, Y');
-        $this->movieTime = $showtime->time->format('g:i A');
+        $this->movieStartTime = \Carbon\Carbon::parse($showtime->start_time)->format('g:i A');
+        $this->movieEndTime = \Carbon\Carbon::parse($showtime->end_time)->format('g:i A');
         $this->movieTheater = $showtime->theater->name;
         $this->moviePosterAlt = $movie->title . ' poster';
         
@@ -126,7 +127,8 @@ class MySelectSeats extends SelectSeats
 - `$movieDuration` - Movie duration
 - `$movieRating` - Movie rating
 - `$movieDate` - Show date
-- `$movieTime` - Show time
+- `$movieStartTime` - Show start time
+- `$movieEndTime` - Show end time
 - `$movieTheater` - Theater name
 - `$moviePosterAlt` - Alt text for poster (default: 'Movie poster')
 
@@ -134,6 +136,44 @@ class MySelectSeats extends SelectSeats
 - The `MovieInformation` component automatically handles display logic and only shows if `show_movie_information` is enabled in config and at least one property is set.
 - If `moviePosterUrl` is `null` or empty, a placeholder image will be displayed.
 - The poster supports both local paths (e.g., `/storage/posters/movie.jpg`) and external URLs.
+
+### Customizing Movie Information Fields
+
+Control which fields are displayed in the movie information component:
+
+```php
+'movie_information_fields' => [
+    'poster' => true,        // Show/hide movie poster
+    'title' => true,         // Show/hide movie title
+    'genre' => true,         // Show/hide genre badge
+    'duration' => true,      // Show/hide duration
+    'rating' => true,        // Show/hide rating
+    'date' => true,          // Show/hide show date
+    'start_time' => true,    // Show/hide start time
+    'end_time' => true,      // Show/hide end time
+    'theater' => true,       // Show/hide theater name
+],
+```
+
+**Example**: Hide rating and end time:
+
+```php
+'movie_information_fields' => [
+    'poster' => true,
+    'title' => true,
+    'genre' => true,
+    'duration' => true,
+    'rating' => false,       // Hidden
+    'date' => true,
+    'start_time' => true,
+    'end_time' => false,    // Hidden
+    'theater' => true,
+],
+```
+
+Fields will only display if:
+1. The field is enabled in config (`true`)
+2. The corresponding property has a value (not `null` or empty)
 
 ### Color Customization
 
@@ -203,7 +243,93 @@ This will copy all views to `resources/views/vendor/cine-reserve/`. You can then
 - `screen.blade.php` - Screen indicator
 - `proceed-button.blade.php` - Proceed button component
 
-**Example**: To customize the movie information component, publish views and edit `resources/views/vendor/cine-reserve/components/movie-information.blade.php`.
+#### Customizing Movie Information Component
+
+The movie information component can be fully customized by publishing its view. This allows you to:
+- Add custom fields (director, cast, synopsis, language, etc.)
+- Change the layout and styling
+- Reorder or remove existing fields
+- Add custom HTML/JavaScript
+
+**Complete Example**: Adding custom "Director" and "Synopsis" fields:
+
+1. **Publish the views:**
+```bash
+php artisan vendor:publish --tag=cine-reserve-views
+```
+
+2. **Add custom properties to your `SelectSeats` component:**
+```php
+class MySelectSeats extends SelectSeats
+{
+    public $movieDirector = null;
+    public $movieSynopsis = null;
+    
+    public function mount($movieId, $showtimeId): void
+    {
+        parent::mount();
+        $movie = Movie::find($movieId);
+        
+        // Set standard properties
+        $this->movieTitle = $movie->title;
+        $this->moviePosterUrl = $movie->poster_url;
+        // ... other standard properties
+        
+        // Set your custom properties
+        $this->movieDirector = $movie->director;
+        $this->movieSynopsis = $movie->synopsis;
+    }
+}
+```
+
+3. **Edit the published view** (`resources/views/vendor/cine-reserve/components/movie-information.blade.php`):
+```blade
+{{-- Add your custom fields anywhere in the component --}}
+@if ($movieDirector ?? null)
+    <div class="flex items-start gap-3 mt-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold mb-1">Director</p>
+            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $movieDirector }}</p>
+        </div>
+    </div>
+@endif
+
+@if ($movieSynopsis ?? null)
+    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold mb-2">Synopsis</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ $movieSynopsis }}</p>
+    </div>
+@endif
+```
+
+4. **Update the component call** in your published `select-seats.blade.php` (if you also published that view):
+```blade
+<x-cine-reserve::movie-information
+    :poster-url="$this->moviePosterUrl"
+    :title="$this->movieTitle"
+    :genre="$this->movieGenre"
+    :duration="$this->movieDuration"
+    :rating="$this->movieRating"
+    :date="$this->movieDate"
+    :start-time="$this->movieStartTime"
+    :end-time="$this->movieEndTime"
+    :theater="$this->movieTheater"
+    :poster-alt="$this->moviePosterAlt"
+    :director="$this->movieDirector"      {{-- Add custom prop --}}
+    :synopsis="$this->movieSynopsis"       {{-- Add custom prop --}}
+/>
+```
+
+**Important Notes**: 
+- When you publish views, Laravel will automatically use your published version instead of the package's default view.
+- The component accepts any additional properties you pass to it - you're not limited to the predefined ones.
+- You can completely rewrite the component view to match your design requirements.
+- Use the null coalescing operator (`??`) in Blade to safely check for custom properties that may not always be set.
 
 ### Overriding Translations
 
@@ -314,6 +440,10 @@ public function calculateTotal(): void
 
 ### Customizing Proceed Logic
 
+You have two options for handling the booking process:
+
+#### Option 1: Override `proceed()` (Full Control)
+
 Override `proceed()` to add validation and custom behavior:
 
 ```php
@@ -335,6 +465,68 @@ public function proceed(): void
     // return redirect()->route('booking.checkout');
 }
 ```
+
+#### Option 2: Use `handleBooking()` Hook (Recommended)
+
+Keep validation in `proceed()` and place booking logic to `handleBooking()`:
+
+```php
+public function proceed(): void
+{
+    // Validation only
+    if (empty($this->selectedSeats)) {
+        Notification::make()
+            ->title('Please select at least one seat')
+            ->warning()
+            ->send();
+        return;
+    }
+    
+    // Validate showtime exists
+    if (!$this->showtimeId) {
+        Notification::make()
+            ->title('Showtime not found')
+            ->danger()
+            ->send();
+        return;
+    }
+    
+    // Calculate total
+    $this->calculateTotal();
+    
+    // Call parent to dispatch event and trigger handleBooking()
+    parent::proceed();
+}
+
+protected function handleBooking(array $selectedSeatDetails): void
+{
+    // Create booking in database
+    $booking = Booking::create([
+        'showtime_id' => $this->showtimeId,
+        'user_id' => Auth::id(),
+        'seat_ids' => $this->selectedSeats,
+        'total_amount' => $this->total,
+        'status' => 'pending',
+    ]);
+    
+    // Clear selected seats
+    $this->selectedSeats = [];
+    $this->total = 0;
+    
+    // Show success notification
+    Notification::make()
+        ->title('Seats booked successfully')
+        ->body("Booking ID: {$booking->id}")
+        ->success()
+        ->send();
+}
+```
+
+**Benefits of using `handleBooking()`:**
+- Clean separation: validation in `proceed()`, business logic in `handleBooking()`
+- Event is dispatched automatically before booking logic runs
+- Easier to maintain and test
+- Follows the plugin's intended pattern
 
 ## 📁 Package Structure
 
@@ -413,7 +605,8 @@ The `SelectSeats` class is intentionally simple. Override methods to add your ow
 
 - `mount()` - Load data, set movie info, initialize booked seats
 - `toggleSeat()` - Add validation, selection limits, business rules
-- `proceed()` - Add validation, redirect, save to database
+- `proceed()` - Add validation before booking (recommended: call `parent::proceed()` to trigger `handleBooking()`)
+- `handleBooking()` - Implement booking logic (save to database, send notifications, etc.)
 - `calculateTotal()` - Implement pricing logic
 
 See examples above in the "Extending SelectSeats" section.
