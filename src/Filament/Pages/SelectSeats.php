@@ -231,6 +231,6 @@ class SelectSeats extends Page
      */
     protected function handleBooking(array $selectedSeatDetails): void
     {
-        dd($selectedSeatDetails);
+        // Implement your booking logic here
     }
 }
