@@ -37,7 +37,8 @@ class CineReserveServiceProvider extends PackageServiceProvider
             'cine-reserve-colors'
         );
 
-        // Register Blade component (no need to publish views)
+        // Register Blade component
+        // Note: Views can be published for customization via: php artisan vendor:publish --tag=cine-reserve-views
         Blade::component('cine-reserve::movie-information', MovieInformation::class);
 
         FilamentAsset::register([
