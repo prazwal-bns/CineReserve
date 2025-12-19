@@ -13,6 +13,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Movie Information Fields
+    |--------------------------------------------------------------------------
+    |
+    | Control which fields are displayed in the movie information component.
+    | Set to false to hide a field, true to show it.
+    |
+    */
+    'movie_information_fields' => [
+        'poster' => true,
+        'title' => true,
+        'genre' => true,
+        'duration' => true,
+        'rating' => true,
+        'date' => true,
+        'start_time' => true,
+        'end_time' => true,
+        'theater' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Show Screen Indicator
     |--------------------------------------------------------------------------
     |
