@@ -13,6 +13,11 @@ class MovieInformation extends Component
     public bool $shouldDisplay;
 
     /**
+     * Field visibility settings from config
+     */
+    public array $fieldVisibility;
+
+    /**
      * Create a new component instance.
      */
     public function __construct(
@@ -28,6 +33,25 @@ class MovieInformation extends Component
         public string $posterAlt = 'Movie poster',
     ) {
         $this->shouldDisplay = config('cine-reserve.show_movie_information', true);
+        $this->fieldVisibility = config('cine-reserve.movie_information_fields', [
+            'poster' => true,
+            'title' => true,
+            'genre' => true,
+            'duration' => true,
+            'rating' => true,
+            'date' => true,
+            'start_time' => true,
+            'end_time' => true,
+            'theater' => true,
+        ]);
+    }
+
+    /**
+     * Check if a field should be displayed
+     */
+    public function shouldShowField(string $field): bool
+    {
+        return $this->fieldVisibility[$field] ?? true;
     }
 
     /**
