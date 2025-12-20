@@ -93,6 +93,7 @@ use Przwl\CineReserve\Filament\Pages\SelectSeats;
 use App\Models\Movie;
 use App\Models\Showtime;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Storage;
 
 class CustomSelectSeats extends SelectSeats
 {
@@ -116,7 +117,7 @@ class CustomSelectSeats extends SelectSeats
 
         // Set movie information
         $this->movieTitle = $movie->title;
-        $this->moviePosterUrl = $movie->poster_url;
+        $this->moviePosterUrl = $movie->poster_url ? Storage::disk('public')->url($movie->poster_url) : null;
         $this->movieGenre = $movie->genre;
         $this->movieDuration = $movie->duration . ' min';
         $this->movieRating = $movie->rating;
@@ -239,6 +240,26 @@ Set these properties in your `SelectSeats` component:
 - `$movieEndTime` - Show end time
 - `$movieTheater` - Theater name
 - `$moviePosterAlt` - Alt text for poster
+
+## ⚠️ Important: File Storage Configuration
+
+**Movie poster images must be stored on the `public` disk for proper display.**
+
+### Configuring Filament FileUpload
+
+When using Filament's `FileUpload` component for movie posters, ensure you configure it to use the `public` disk:
+
+```php
+use Filament\Forms\Components\FileUpload;
+
+FileUpload::make('poster_url')
+    ->image()
+    ->disk('public')           // Required: Use public disk
+    ->visibility('public')      // Required: Set visibility to public
+    ->required(),
+```
+
+**Why is this required?** The movie information component displays images directly in the browser. Files stored on private disks cannot be accessed via direct URLs and will not display correctly. Using the `public` disk ensures that poster images are accessible and display properly.
 
 ## 🎨 Color Options
 

@@ -145,7 +145,27 @@ Run migrations:
 php artisan migrate
 ```
 
-## 🎬 Step 3: Create Custom SelectSeats Page
+## 📸 Step 3: Configure File Storage for Movie Posters
+
+**Important:** Movie poster images must be stored on the `public` disk for proper display in the component.
+
+### In Your Filament Resource Form
+
+When creating or editing movies, configure the `FileUpload` component to use the `public` disk:
+
+```php
+use Filament\Forms\Components\FileUpload;
+
+FileUpload::make('poster_url')
+    ->image()
+    ->disk('public')           // Required: Use public disk
+    ->visibility('public')      // Required: Set visibility to public
+    ->required(),
+```
+
+**Why is this required?** The movie information component displays images directly in the browser. Files stored on private disks cannot be accessed via direct URLs and will not display correctly. Using the `public` disk ensures that poster images are accessible and display properly.
+
+## 🎬 Step 4: Create Custom SelectSeats Page
 
 ```bash
 php artisan make:filament-page CustomSelectSeats --type=custom
@@ -162,6 +182,7 @@ use App\Models\Booking;
 use App\Models\Showtime;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Przwl\CineReserve\Filament\Pages\SelectSeats;
 
 class CustomSelectSeats extends SelectSeats
@@ -190,7 +211,10 @@ class CustomSelectSeats extends SelectSeats
 
         // Set movie information
         $this->movieTitle = $movie->title;
-        $this->moviePosterUrl = $movie->poster_url;
+        // Generate public URL for poster (requires public disk)
+        $this->moviePosterUrl = $movie->poster_url 
+            ? Storage::disk('public')->url($movie->poster_url) 
+            : null;
         $this->movieGenre = $movie->genre;
         $this->movieDuration = $movie->duration ? $movie->duration . ' min' : null;
         $this->movieRating = $movie->rating;
@@ -289,23 +313,6 @@ class CustomSelectSeats extends SelectSeats
 }
 ```
 
-## 🔗 Step 4: Register Page
-
-In `app/Providers/Filament/AdminPanelProvider.php`:
-
-```php
-use App\Filament\Pages\CustomSelectSeats;
-
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        ->pages([
-            Dashboard::class,
-            CustomSelectSeats::class,
-        ]);
-}
-```
-
 ## ✅ Step 5: Test
 
 1. Create a movie and showtime in your database
@@ -335,7 +342,9 @@ Customize views in `resources/views/vendor/cine-reserve/`
 - [ ] Install package and register plugin
 - [ ] Create migrations and models
 - [ ] Run migrations
+- [ ] Configure FileUpload to use `public` disk for movie posters
 - [ ] Create CustomSelectSeats page
+- [ ] Use `Storage::disk('public')->url()` when setting `$moviePosterUrl`
 - [ ] Register page in AdminPanelProvider
 - [ ] Test seat selection and booking
 
