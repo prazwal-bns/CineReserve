@@ -1,4 +1,19 @@
-node_modules
-resources/dist/css
-vendor
-composer.lock
+# Dependencies
+/vendor
+/node_modules
+/composer.lock
+/package-lock.json
+
+# Build outputs
+/resources/dist
+
+# IDE
+/.idea
+/.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
