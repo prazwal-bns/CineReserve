@@ -77,8 +77,12 @@ All configuration is done via `config/cine-reserve.php`:
 'show_screen' => true,
 
 // Configure seat layout
-'rows' => ['A', 'B', 'C', 'D', 'E'],
-'seats_per_row' => 8,
+    'rows' => ['A', 'B', 'C', 'D', 'E'],
+    'seats_per_row' => 8,
+
+    // Maximum seats that can be selected in one session
+    // Set to null for unlimited selection
+    'max_selection_limit' => null,
 ```
 
 ### Movie Information
@@ -418,13 +422,23 @@ public function toggleSeat($seatId): void
         return;
     }
     
-    // Add your own validation logic here
-    // Example: Check max selection limit, validate seat exists, etc.
+    // Check max selection limit (if using config)
+    $maxLimit = config('cine-reserve.max_selection_limit');
+    if ($maxLimit !== null && count($this->selectedSeats) >= $maxLimit && !in_array($seatId, $this->selectedSeats)) {
+        Notification::make()
+            ->title('Maximum seats reached')
+            ->body("You can only select up to {$maxLimit} seat(s).")
+            ->warning()
+            ->send();
+        return;
+    }
     
     // Call parent to handle toggle
     parent::toggleSeat($seatId);
 }
 ```
+
+**Note**: The base `toggleSeat()` method silently enforces `max_selection_limit` if set in config. Override it to add custom notifications or validation logic.
 
 ### Customizing Total Calculation
 
