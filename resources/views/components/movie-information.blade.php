@@ -3,7 +3,7 @@
         class="bg-white dark:bg-[#08080a] rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
         <div class="flex flex-col md:flex-row gap-6 p-6">
             {{-- Movie Poster --}}
-            @if ($this->shouldShowField('poster'))
+            @if (($fieldVisibility['poster'] ?? true))
                 <div class="flex-shrink-0">
                     @if ($posterUrl)
                         <img src="{{ $posterUrl }}" alt="{{ $posterAlt }}"
@@ -27,17 +27,17 @@
             <div class="flex-1 space-y-4">
                 {{-- Title and Meta Info --}}
                 <div>
-                    @if ($this->shouldShowField('title'))
+                    @if (($fieldVisibility['title'] ?? true))
                         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">{{ $title ?? 'Movie Title' }}</h2>
                     @endif
                     <div class="flex flex-wrap items-center gap-3 text-sm">
-                        @if ($this->shouldShowField('genre') && $genre)
+                        @if (($fieldVisibility['genre'] ?? true) && $genre)
                             <span
                                 class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium">
                                 {{ $genre }}
                             </span>
                         @endif
-                        @if ($this->shouldShowField('duration') && $duration)
+                        @if (($fieldVisibility['duration'] ?? true) && $duration)
                             <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -46,7 +46,7 @@
                                 {{ $duration }}
                             </span>
                         @endif
-                        @if ($this->shouldShowField('rating') && $rating)
+                        @if (($fieldVisibility['rating'] ?? true) && $rating)
                             <span
                                 class="inline-flex items-center px-2.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
                                 {{ $rating }}
@@ -56,10 +56,10 @@
                 </div>
 
                 {{-- Showtime Details --}}
-                @if ($this->shouldShowField('date') || $this->shouldShowField('start_time') || $this->shouldShowField('end_time') || $this->shouldShowField('theater'))
+                @if (($fieldVisibility['date'] ?? true) || ($fieldVisibility['start_time'] ?? true) || ($fieldVisibility['end_time'] ?? true) || ($fieldVisibility['theater'] ?? true))
                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            @if ($this->shouldShowField('date') && $date)
+                            @if (($fieldVisibility['date'] ?? true) && $date)
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @if ($this->shouldShowField('start_time') && $startTime)
+                            @if (($fieldVisibility['start_time'] ?? true) && $startTime)
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -97,7 +97,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @if ($this->shouldShowField('end_time') && $endTime)
+                            @if (($fieldVisibility['end_time'] ?? true) && $endTime)
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -116,7 +116,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @if ($this->shouldShowField('theater') && $theater)
+                            @if (($fieldVisibility['theater'] ?? true) && $theater)
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
