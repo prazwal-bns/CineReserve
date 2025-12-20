@@ -68,6 +68,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maximum Seat Selection Limit
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of seats a user can select in a single session.
+    | Set to null for unlimited selection.
+    | This is a UI-level constraint. Override toggleSeat() for custom logic.
+    |
+    */
+    'max_selection_limit' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Seat Colors
     |--------------------------------------------------------------------------
     |

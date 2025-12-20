@@ -3,6 +3,7 @@
 namespace Przwl\CineReserve\Filament\Pages;
 
 use BackedEnum;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
 use UnitEnum;
@@ -97,8 +98,20 @@ class SelectSeats extends Page
         $seatId = (int) $seatId;
         
         if (in_array($seatId, $this->selectedSeats)) {
+            // Deselect seat
             $this->selectedSeats = array_values(array_diff($this->selectedSeats, [$seatId]));
         } else {
+            // Check max selection limit
+            $maxLimit = config('cine-reserve.max_selection_limit');
+            if ($maxLimit !== null && count($this->selectedSeats) >= $maxLimit) {
+                Notification::make()
+                    ->title('Maximum selection limit reached')
+                    ->body('You can only select up to ' . $maxLimit . ' seats at a time.')
+                    ->warning()
+                    ->send();
+                return;
+            }
+            
             $this->selectedSeats[] = $seatId;
         }
         
