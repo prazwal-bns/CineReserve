@@ -1,20 +1,15 @@
-# CineReserve Integration Guide
+# Quick CineReserve Integration Guide
 
-Quick guide to integrate CineReserve plugin into your Laravel project.
+This is a sample integration guide for CineReserve. Feel free to adapt or modify these steps as you see fit for your Laravel project.
 
-## 📦 Installation
+## 📦 Step 1: Install & Register
 
 ```bash
-# If using as local package (already set up)
 composer require przwl/cine-reserve
-
-# Publish config (optional)
 php artisan vendor:publish --tag=cine-reserve-config
 ```
 
-## 🔌 Register Plugin
-
-In `app/Providers/Filament/AdminPanelProvider.php`:
+Register plugin in `app/Providers/Filament/AdminPanelProvider.php`:
 
 ```php
 use Przwl\CineReserve\Filament\CineReserve;
@@ -22,24 +17,24 @@ use Przwl\CineReserve\Filament\CineReserve;
 public function panel(Panel $panel): Panel
 {
     return $panel
-        // ... other config
         ->plugins([
             CineReserve::make(),
         ]);
 }
 ```
 
-## 🗄️ Database Structure
+## 🗄️ Step 2: Database Setup
 
-### Models & Migrations
-
-#### 1. Movies Table
+### Create Migrations
 
 ```bash
 php artisan make:model Movie -m
+php artisan make:model Showtime -m
+php artisan make:model Booking -m
 ```
 
-**Migration:**
+### Movies Migration
+
 ```php
 Schema::create('movies', function (Blueprint $table) {
     $table->id();
@@ -47,30 +42,14 @@ Schema::create('movies', function (Blueprint $table) {
     $table->text('description')->nullable();
     $table->string('poster_url')->nullable();
     $table->string('genre')->nullable();
-    $table->integer('duration')->nullable(); // in minutes
+    $table->integer('duration')->nullable();
     $table->string('rating')->nullable();
     $table->timestamps();
 });
 ```
 
-**Model:**
-```php
-class Movie extends Model
-{
-    protected $fillable = [
-        'title', 'description', 'poster_url', 
-        'genre', 'duration', 'rating'
-    ];
-}
-```
+### Showtimes Migration
 
-#### 2. Showtimes Table
-
-```bash
-php artisan make:model Showtime -m
-```
-
-**Migration:**
 ```php
 Schema::create('showtimes', function (Blueprint $table) {
     $table->id();
@@ -84,13 +63,44 @@ Schema::create('showtimes', function (Blueprint $table) {
 });
 ```
 
-**Model:**
+### Bookings Migration
+
+```php
+Schema::create('bookings', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('showtime_id')->constrained()->onDelete('cascade');
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->json('seat_ids');
+    $table->decimal('total_amount', 10, 2);
+    $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+    $table->timestamps();
+});
+```
+
+### Models
+
+**Movie.php:**
+```php
+class Movie extends Model
+{
+    protected $fillable = [
+        'title', 'description', 'poster_url', 
+        'genre', 'duration', 'rating'
+    ];
+}
+```
+
+**Showtime.php:**
 ```php
 class Showtime extends Model
 {
     protected $fillable = [
         'movie_id', 'date', 'start_time', 
         'end_time', 'theater_name', 'total_seats'
+    ];
+
+    protected $casts = [
+        'date' => 'date',
     ];
 
     public function movie()
@@ -105,26 +115,7 @@ class Showtime extends Model
 }
 ```
 
-#### 3. Bookings Table
-
-```bash
-php artisan make:model Booking -m
-```
-
-**Migration:**
-```php
-Schema::create('bookings', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('showtime_id')->constrained()->onDelete('cascade');
-    $table->foreignId('user_id')->constrained()->onDelete('cascade');
-    $table->json('seat_ids'); // Array of seat IDs: [1, 2, 3]
-    $table->decimal('total_amount', 10, 2);
-    $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
-    $table->timestamps();
-});
-```
-
-**Model:**
+**Booking.php:**
 ```php
 class Booking extends Model
 {
@@ -149,7 +140,12 @@ class Booking extends Model
 }
 ```
 
-## 🎬 Create Custom SelectSeats Page
+Run migrations:
+```bash
+php artisan migrate
+```
+
+## 🎬 Step 3: Create Custom SelectSeats Page
 
 ```bash
 php artisan make:filament-page CustomSelectSeats --type=custom
@@ -162,22 +158,28 @@ php artisan make:filament-page CustomSelectSeats --type=custom
 
 namespace App\Filament\Pages;
 
-use Przwl\CineReserve\Filament\Pages\SelectSeats;
-use Filament\Notifications\Notification;
-use App\Models\Showtime;
 use App\Models\Booking;
+use App\Models\Showtime;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
+use Przwl\CineReserve\Filament\Pages\SelectSeats;
 
 class CustomSelectSeats extends SelectSeats
 {
+    protected static ?string $slug = 'custom-select-seats';
+    
     public ?int $showtimeId = null;
+    public $total = 0;
 
-    public function mount(?int $showtimeId = null): void
+    public function mount(): void
     {
         parent::mount();
         
+        $showtimeId = request()->query('showtimeId');
+        
         if ($showtimeId) {
-            $this->showtimeId = $showtimeId;
-            $this->loadShowtimeData($showtimeId);
+            $this->showtimeId = (int) $showtimeId;
+            $this->loadShowtimeData($this->showtimeId);
         }
     }
 
@@ -190,11 +192,11 @@ class CustomSelectSeats extends SelectSeats
         $this->movieTitle = $movie->title;
         $this->moviePosterUrl = $movie->poster_url;
         $this->movieGenre = $movie->genre;
-        $this->movieDuration = $movie->duration . ' min';
+        $this->movieDuration = $movie->duration ? $movie->duration . ' min' : null;
         $this->movieRating = $movie->rating;
         $this->movieDate = $showtime->date->format('F j, Y');
-        $this->movieStartTime = $showtime->start_time->format('g:i A');
-        $this->movieEndTime = $showtime->end_time->format('g:i A');
+        $this->movieStartTime = \Carbon\Carbon::parse($showtime->start_time)->format('g:i A');
+        $this->movieEndTime = \Carbon\Carbon::parse($showtime->end_time)->format('g:i A');
         $this->movieTheater = $showtime->theater_name;
         $this->moviePosterAlt = $movie->title . ' poster';
 
@@ -227,14 +229,12 @@ class CustomSelectSeats extends SelectSeats
 
     public function calculateTotal(): void
     {
-        // Implement your pricing logic
         $pricePerSeat = 10.00;
         $this->total = count($this->selectedSeats) * $pricePerSeat;
     }
 
     public function proceed(): void
     {
-        // Validation
         if (empty($this->selectedSeats)) {
             Notification::make()
                 ->title('Please select at least one seat')
@@ -251,16 +251,12 @@ class CustomSelectSeats extends SelectSeats
             return;
         }
 
-        // Calculate total
         $this->calculateTotal();
-
-        // Call parent to dispatch event and trigger handleBooking()
         parent::proceed();
     }
 
     protected function handleBooking(array $selectedSeatDetails): void
     {
-        // Create booking
         try {
             $booking = Booking::create([
                 'showtime_id' => $this->showtimeId,
@@ -270,12 +266,11 @@ class CustomSelectSeats extends SelectSeats
                 'status' => 'pending',
             ]);
 
-            // Clear selected seats
             $this->selectedSeats = [];
             $this->total = 0;
 
             // Reload booked seats
-            $this->loadShowtimeData($this->showtimeId, false);
+            $this->loadShowtimeData($this->showtimeId);
 
             Notification::make()
                 ->title('Seats booked successfully')
@@ -294,65 +289,7 @@ class CustomSelectSeats extends SelectSeats
 }
 ```
 
-## 📡 Booking Options
-
-You have two ways to handle bookings:
-
-### Option 1: Use `handleBooking()` Hook (Recommended)
-
-The `handleBooking()` method is automatically called after seat selection. Override it in your custom page:
-
-```php
-protected function handleBooking(array $selectedSeatDetails): void
-{
-    // Create booking
-    $booking = Booking::create([
-        'showtime_id' => $this->showtimeId,
-        'user_id' => Auth::id(),
-        'seat_ids' => $this->selectedSeats,
-        'total_amount' => $this->total,
-        'status' => 'pending',
-    ]);
-
-    // Your booking logic here
-    // Send notifications, clear seats, redirect, etc.
-}
-```
-
-**Benefits:**
-- Clean separation: validation in `proceed()`, booking logic in `handleBooking()`
-- Event is dispatched automatically
-- Easier to maintain
-
-### Option 2: Listen to Seat Selection Event
-
-Alternatively, listen to the `seatSelected` event in any Livewire component:
-
-```php
-use Livewire\Attributes\On;
-
-#[On('seatSelected')]
-public function handleSeatSelection($data)
-{
-    $selectedSeats = $data['selectedSeats'];
-    $seatDetails = $data['seatDetails'];
-    $count = $data['count'];
-
-    // Create booking
-    $booking = Booking::create([
-        'showtime_id' => $this->showtimeId,
-        'user_id' => auth()->id(),
-        'seat_ids' => $selectedSeats,
-        'total_amount' => $count * 10.00, // Your pricing
-        'status' => 'pending',
-    ]);
-
-    // Redirect to payment/confirmation
-    return redirect()->route('booking.payment', $booking);
-}
-```
-
-## 🔗 Register Custom Page
+## 🔗 Step 4: Register Page
 
 In `app/Providers/Filament/AdminPanelProvider.php`:
 
@@ -364,62 +301,44 @@ public function panel(Panel $panel): Panel
     return $panel
         ->pages([
             Dashboard::class,
-            CustomSelectSeats::class, // Add your custom page
+            CustomSelectSeats::class,
         ]);
 }
 ```
 
-## 🎨 Customizing Movie Information Component
+## ✅ Step 5: Test
 
-If you need to add custom fields (director, cast, synopsis, etc.) to the movie information component:
+1. Create a movie and showtime in your database
+2. Access: `/admin/custom-select-seats?showtimeId=1`
+3. Select seats and test booking
 
-1. **Publish the views:**
+## 🎨 Customization
+
+### Override Methods
+
+- `mount()` - Load data and initialize booked seats
+- `toggleSeat()` - Add validation (prevent booking already booked seats)
+- `calculateTotal()` - Implement pricing logic
+- `proceed()` - Add validation before booking
+- `handleBooking()` - Implement booking logic (save to database, notifications)
+
+### Publish Views
+
 ```bash
 php artisan vendor:publish --tag=cine-reserve-views
 ```
 
-2. **Add custom properties to your `CustomSelectSeats` class:**
-```php
-class CustomSelectSeats extends SelectSeats
-{
-    public $movieDirector = null;
-    public $movieSynopsis = null;
-    
-    protected function loadShowtimeData(int $showtimeId): void
-    {
-        // ... existing code ...
-        
-        // Add your custom properties
-        $this->movieDirector = $movie->director;
-        $this->movieSynopsis = $movie->synopsis;
-    }
-}
-```
+Customize views in `resources/views/vendor/cine-reserve/`
 
-3. **Edit the published view** (`resources/views/vendor/cine-reserve/components/movie-information.blade.php`) to add your custom fields.
+## 📝 Quick Checklist
 
-4. **Update the component call** in your published `select-seats.blade.php` to pass the custom props.
-
-See the main README.md for a complete example with code snippets.
-
-## 🎯 Quick Setup Checklist
-
+- [ ] Install package and register plugin
+- [ ] Create migrations and models
 - [ ] Run migrations
-- [ ] Create models (Movie, Showtime, Booking)
 - [ ] Create CustomSelectSeats page
-- [ ] Register plugin in AdminPanelProvider
-- [ ] Register CustomSelectSeats page
-- [ ] Test seat selection
-- [ ] Implement booking logic
-- [ ] Add payment/confirmation flow
-- [ ] (Optional) Customize movie information component with custom fields
+- [ ] Register page in AdminPanelProvider
+- [ ] Test seat selection and booking
 
-## 💡 Tips
+---
 
-- Access page with: `/admin/custom-select-seats?showtimeId=1`
-- Override `mount()` to accept route parameters
-- Use `$this->bookedSeats` to prevent double booking
-- Use `handleBooking()` hook for booking logic (recommended)
-- Override `proceed()` for validation only, then call `parent::proceed()`
-- Emit custom events for additional functionality
-
+**Need more details?** See the main [README.md](README.md) for advanced configuration and customization options.
