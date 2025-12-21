@@ -22,7 +22,9 @@ composer require przwl/cine-reserve
 
 ### Register Plugin
 
-In `app/Providers/Filament/AdminPanelProvider.php`:
+In `AdminPanelProvider.php`:
+
+Register the plugin from `->plugins([])`
 
 ```php
 use Przwl\CineReserve\Filament\CineReserve;
@@ -36,7 +38,7 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-### Publish Config (Optional)
+### Publish Config
 
 ```bash
 php artisan vendor:publish --tag=cine-reserve-config
