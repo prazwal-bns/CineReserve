@@ -40,8 +40,12 @@ class CineReserveServiceProvider extends PackageServiceProvider
         // Register Blade component
         Blade::component('cine-reserve::movie-information', MovieInformation::class);
 
-        FilamentAsset::register([
-            Css::make('cine-reserve', __DIR__ . '/../resources/dist/css/cine-reserve.css'),
-        ]);
+        // Register CSS asset (only if file exists)
+        $cssPath = __DIR__ . '/../resources/dist/css/cine-reserve.css';
+        if (file_exists($cssPath)) {
+            FilamentAsset::register([
+                Css::make('cine-reserve', $cssPath),
+            ]);
+        }
     }
 }
