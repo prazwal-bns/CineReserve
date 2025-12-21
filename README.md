@@ -5,12 +5,11 @@ A seamless, user-friendly Filament plugin for adding interactive movie seat sele
 ## 🎬 Features
 
 - **Interactive Seat Selection**: Beautiful, animated seat selection interface
-- **Movie Information Display**: Showcase movie details with poster image support
+- **Movie Information Display**: Showcase movie details.
 - **Customizable Colors**: Choose seat colors for booked, available and selected seats.
 - **Dynamic Layout**: Configure rows and seats per row via config
 - **Maximum Selection Limit**: Set limits on seat selection per session
 - **Dark Mode Support**: Fully supports Filament's dark mode
-- **Responsive Design**: Works on all screen sizes
 - **Extensible**: Easy to extend and customize
 
 ## 📦 Installation
