@@ -4,9 +4,6 @@
 /composer.lock
 /package-lock.json
 
-# Build outputs
-/resources/dist
-
 # IDE
 /.idea
 /.vscode
