@@ -17,7 +17,6 @@ class CineReserveServiceProvider extends PackageServiceProvider
     {
         $package->name(self::$name)
             ->hasViews()
-            ->hasAssets()
             ->hasTranslations()
             ->hasConfigFile('cine-reserve')
             ->hasConfigFile('cine-reserve-colors');
