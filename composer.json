@@ -3,7 +3,6 @@
     "description": "A seamless, user-friendly Filament plugin for adding interactive movie seat selection and booking functionality to any Laravel application.",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.0",
     "keywords": [
         "filament",
         "laravel",
