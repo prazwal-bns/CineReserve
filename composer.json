@@ -22,6 +22,11 @@
         "email": "prajwalbns15@gmail.com"
     }],
     "require": {},
+    "autoload": {
+        "psr-4": {
+            "Przwl\\CineReserve\\": "src/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
