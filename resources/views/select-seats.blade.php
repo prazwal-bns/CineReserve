@@ -184,8 +184,20 @@
             </div>
         </div>
 
-        {{-- Proceed Button --}}
-        @include('cine-reserve::proceed-button')
+        {{-- Bottom Bar: Pricing (Left) + Proceed Button (Right) --}}
+        <div class="mt-6 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div class="flex items-center justify-between gap-4">
+                {{-- Pricing Info (Left) --}}
+                <div class="flex-1">
+                    @include('cine-reserve::pricing-display')
+                </div>
+
+                {{-- Proceed Button (Right) --}}
+                <div class="flex-shrink-0">
+                    @include('cine-reserve::proceed-button')
+                </div>
+            </div>
+        </div>
 
     </div>
 </x-filament-panels::page>
