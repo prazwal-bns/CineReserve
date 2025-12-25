@@ -12,9 +12,6 @@ class SelectSeats extends Page
 {
     public $selectedSeats = [];
     public $bookedSeats = [];
-
-    // should show in navigation bar
-    protected static bool $shouldRegisterNavigation = false;
     
     // Movie information properties
     public $moviePosterUrl = null;
@@ -35,6 +32,14 @@ class SelectSeats extends Page
     protected static UnitEnum|string|null $navigationGroup = 'Seat Management';
 
     protected static ?string $title = 'Select Seats';
+
+    /**
+     * Determine if the page should be registered in navigation.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return config('cine-reserve.register_navigation', false);
+    }
 
     /**
      * Initialize component. Override to load your own data.
