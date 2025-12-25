@@ -5,13 +5,15 @@ namespace Przwl\CineReserve\Filament\Pages;
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Support\Collection;
+use Przwl\CineReserve\Filament\Pages\Concerns\HasSeatSelection;
 use UnitEnum;
 
 class SelectSeats extends Page
 {
+    use HasSeatSelection;
     public $selectedSeats = [];
     public $bookedSeats = [];
+    public $total = 0;
     
     // Movie information properties
     public $moviePosterUrl = null;
@@ -51,6 +53,7 @@ class SelectSeats extends Page
 
     /**
      * Get movie information array.
+     * Override this method to customize the movie information structure.
      */
     public function getMovieInformation(): array
     {
@@ -66,33 +69,6 @@ class SelectSeats extends Page
             'theater' => $this->movieTheater,
             'posterAlt' => $this->moviePosterAlt,
         ];
-    }
-
-    /**
-     * Generate seats from config.
-     */
-    public function getSeatsProperty(): Collection
-    {
-        $rows = config('cine-reserve.rows', ['A', 'B', 'C', 'D', 'E']);
-        $seatsPerRow = config('cine-reserve.seats_per_row', 8);
-        
-        $seats = [];
-        $seatId = 1;
-        
-        foreach ($rows as $row) {
-            for ($number = 1; $number <= $seatsPerRow; $number++) {
-                $seats[] = [
-                    'id' => $seatId,
-                    'row' => $row,
-                    'number' => (string) $number,
-                ];
-                $seatId++;
-            }
-        }
-        
-        return collect($seats)->map(function ($seat) {
-            return (object) $seat;
-        });
     }
 
     /**
@@ -124,92 +100,37 @@ class SelectSeats extends Page
         $this->calculateTotal();
     }
 
+
     /**
-     * Get color RGB values for seat state.
+     * Get price per seat.
+     * Override this method for custom pricing logic.
+     *
+     * @return float
      */
-    protected function getColorValues(string $state): array
+    public function getPricePerSeat(): float
     {
-        $colorName = config("cine-reserve.seat_colors.{$state}", 'gray');
-        $palette = config('cine-reserve-colors', []);
-        
-        return $palette[$colorName] ?? $palette['gray'] ?? [
-            '400' => 'rgb(156, 163, 175)',
-            '500' => 'rgb(107, 114, 128)',
-            '600' => 'rgb(75, 85, 99)',
-            '700' => 'rgb(55, 65, 81)',
-            '800' => 'rgb(31, 41, 55)',
-            '900' => 'rgb(17, 24, 39)',
-        ];
+        return (float) config('cine-reserve.price_per_seat', 10.00);
     }
 
     /**
-     * Get seat color styles for state.
-     */
-    public function getSeatColorClasses(string $state): array
-    {
-        $colors = $this->getColorValues($state);
-        
-        return match($state) {
-            'available' => [
-                'backrest' => "background: linear-gradient(to bottom right, {$colors['500']}, {$colors['600']}, {$colors['700']}); border-color: {$colors['800']};",
-                'base' => "background: linear-gradient(to bottom, {$colors['600']}, {$colors['800']});",
-                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.4);",
-                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
-            ],
-            'selected' => [
-                'backrest' => "background: linear-gradient(to bottom right, {$colors['400']}, {$colors['500']}, {$colors['600']}); border-color: {$colors['700']};",
-                'base' => "background: linear-gradient(to bottom, {$colors['500']}, {$colors['700']});",
-                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
-                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.8);",
-            ],
-            'booked' => [
-                'backrest' => "background: linear-gradient(to bottom right, {$colors['400']}, {$colors['500']}, {$colors['600']}); border-color: {$colors['700']};",
-                'base' => "background: linear-gradient(to bottom, {$colors['500']}, {$colors['700']});",
-                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.4);",
-                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
-            ],
-            default => [
-                'backrest' => "background: linear-gradient(to bottom right, {$colors['400']}, {$colors['500']}, {$colors['600']}); border-color: {$colors['700']};",
-                'base' => "background: linear-gradient(to bottom, {$colors['500']}, {$colors['700']});",
-                'shadow' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.4);",
-                'shadowDark' => "background-color: rgba(" . str_replace(['rgb(', ')'], '', $colors['900']) . ", 0.6);",
-            ],
-        };
-    }
-
-    /**
-     * Get legend color styles.
-     */
-    public function getLegendColorClasses(): array
-    {
-        $availableColors = $this->getColorValues('available');
-        $selectedColors = $this->getColorValues('selected');
-        $bookedColors = $this->getColorValues('booked');
-        
-        return [
-            'available' => [
-                'bg' => "background-color: {$availableColors['500']};",
-                'border' => "border-color: {$availableColors['600']};",
-            ],
-            'selected' => [
-                'bg' => "background-color: {$selectedColors['500']};",
-                'border' => "border-color: {$selectedColors['600']};",
-            ],
-            'booked' => [
-                'bg' => "background-color: {$bookedColors['400']};",
-                'bgDark' => "background-color: {$bookedColors['500']};",
-                'border' => "border-color: {$bookedColors['500']};",
-                'borderDark' => "border-color: {$bookedColors['400']};",
-            ],
-        ];
-    }
-
-    /**
-     * Calculate total. Override to implement pricing logic.
+     * Calculate total. Override to implement custom pricing logic.
      */
     public function calculateTotal(): void
     {
-        // Override this method
+        $pricePerSeat = $this->getPricePerSeat();
+        $this->total = count($this->selectedSeats) * $pricePerSeat;
+    }
+
+    /**
+     * Format price for display.
+     *
+     * @param float $price
+     * @return string
+     */
+    public function formatPrice(float $price): string
+    {
+        $symbol = config('cine-reserve.currency_symbol', '$');
+        return $symbol . number_format($price, 2);
     }
 
     /**
@@ -230,10 +151,14 @@ class SelectSeats extends Page
             ->values()
             ->toArray();
         
+        // Calculate total before dispatching
+        $this->calculateTotal();
+        
         $this->dispatch('seatSelected', [
             'selectedSeats' => $this->selectedSeats,
             'seatDetails' => $selectedSeatDetails,
             'count' => count($this->selectedSeats),
+            'total' => $this->total,
         ]);
 
         // Call hook method for custom booking logic
@@ -249,6 +174,29 @@ class SelectSeats extends Page
      */
     protected function handleBooking(array $selectedSeatDetails): void
     {
-        // Implement your booking logic here
+        if (empty($this->selectedSeats)) {
+            return;
+        }
+
+        // Mark selected seats as booked
+        $this->bookedSeats = array_unique(array_merge($this->bookedSeats, $this->selectedSeats));
+        $this->bookedSeats = array_values($this->bookedSeats);
+
+        // Format seat labels for notification
+        $seatLabels = collect($selectedSeatDetails)->pluck('label')->join(', ');
+        $seatCount = count($this->selectedSeats);
+
+        // Clear selected seats
+        $this->selectedSeats = [];
+        $this->calculateTotal();
+
+        // Send success notification
+        Notification::make()
+            ->title('Seats booked successfully')
+            ->body($seatCount === 1 
+                ? "Seat {$seatLabels} has been booked."
+                : "Seats {$seatLabels} have been booked.")
+            ->success()
+            ->send();
     }
 }
