@@ -18,19 +18,23 @@ class CineReserveServiceProvider extends PackageServiceProvider
         $package->name(self::$name)
             ->hasViews()
             ->hasTranslations()
-            ->hasConfigFile('cine-reserve')
-            ->hasConfigFile('cine-reserve-colors');
+            ->hasConfigFile('cine-reserve');
+    }
+
+    public function packageRegistered(): void
+    {
+        // This ensures both config files can be published with the same tag
+        $this->publishes([
+            __DIR__ . '/../config/cine-reserve-colors.php' => config_path('cine-reserve-colors.php'),
+        ], 'cine-reserve-config');
     }
 
     public function packageBooted()
     {
         parent::packageBooted();
         
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/cine-reserve.php',
-            'cine-reserve'
-        );
-
+        // cine-reserve.php is already merged by hasConfigFile() above
+        // Only need to merge the second config file manually
         $this->mergeConfigFrom(
             __DIR__ . '/../config/cine-reserve-colors.php',
             'cine-reserve-colors'
