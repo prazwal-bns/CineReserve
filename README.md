@@ -9,6 +9,7 @@ A seamless, user-friendly Filament plugin for adding interactive movie seat sele
 - **Customizable Colors**: Choose seat colors for booked, available and selected seats.
 - **Dynamic Layout**: Configure rows and seats per row via config
 - **Maximum Selection Limit**: Set limits on seat selection per session
+- **Pricing Display**: Built-in pricing UI with price per seat and total calculation
 - **Dark Mode Support**: Fully supports Filament's dark mode
 - **Extensible**: Easy to extend and customize
 
@@ -75,6 +76,11 @@ Edit `config/cine-reserve.php`:
     'end_time' => true,
     'theater' => true,
 ],
+
+// Pricing configuration
+'price_per_seat' => 10.00,           // Price per seat (all seats same price)
+'show_price_per_seat' => true,        // Display price per seat in UI
+'currency_symbol' => '$',             // Currency symbol for price display
 ```
 
 ## 🚀 Quick Start
@@ -138,10 +144,16 @@ class CustomSelectSeats extends SelectSeats
             ->toArray();
     }
 
+    public function getPricePerSeat(): float
+    {
+        // Override to implement custom pricing logic (e.g., different prices per showtime)
+        return (float) config('cine-reserve.price_per_seat', 10.00);
+    }
+
     public function calculateTotal(): void
     {
-        $pricePerSeat = 10.00;
-        $this->total = count($this->selectedSeats) * $pricePerSeat;
+        // Automatically calculates total based on selected seats and price per seat
+        parent::calculateTotal();
     }
 
     public function proceed(): void
@@ -185,6 +197,51 @@ class CustomSelectSeats extends SelectSeats
 
 For detailed integration instructions, database migrations, models, and advanced customization, see the [Integration Guide](INTEGRATION_GUIDE.md).
 
+## 💰 Pricing Feature
+
+CineReserve includes a built-in pricing display system that shows:
+- **Total Price**: Automatically calculated based on selected seats
+- **Price Per Seat**: Configurable via config or override method
+- **Selected Seat Details**: Displays all selected seat labels (e.g., A1, A2, B3)
+- **Currency Formatting**: Customizable currency symbol
+
+### Pricing Configuration
+
+Configure pricing in `config/cine-reserve.php`:
+
+```php
+'price_per_seat' => 10.00,        // Default price per seat
+'show_price_per_seat' => true,     // Show/hide price per seat in UI
+'currency_symbol' => '$',          // Currency symbol ($, €, ₹, £, etc.)
+```
+
+### Custom Pricing Logic
+
+Override the `getPricePerSeat()` method for dynamic pricing:
+
+```php
+public function getPricePerSeat(): float
+{
+    // Example: Different prices based on showtime
+    $showtime = Showtime::find($this->showtimeId);
+    return $showtime->price_per_seat ?? 10.00;
+    
+    // Example: Premium seats cost more
+    // return $this->isPremiumSeat($seatId) ? 15.00 : 10.00;
+}
+```
+
+The `calculateTotal()` method automatically multiplies selected seats by the price per seat. Override it for complex pricing (discounts, taxes, etc.):
+
+```php
+public function calculateTotal(): void
+{
+    $baseTotal = count($this->selectedSeats) * $this->getPricePerSeat();
+    $tax = $baseTotal * 0.10; // 10% tax
+    $this->total = $baseTotal + $tax;
+}
+```
+
 ## 🎨 Customization
 
 ### Override Methods
@@ -193,7 +250,9 @@ The `SelectSeats` class is designed to be easily extensible:
 
 - `mount()` - Load data and initialize booked seats
 - `toggleSeat()` - Add validation (e.g., prevent booking already booked seats)
-- `calculateTotal()` - Implement pricing logic
+- `getPricePerSeat()` - Return price per seat (default: reads from config)
+- `calculateTotal()` - Implement custom pricing logic (discounts, taxes, etc.)
+- `formatPrice()` - Customize price formatting (default: currency symbol + number)
 - `proceed()` - Add validation before booking
 - `handleBooking()` - Implement booking logic (save to database, notifications, etc.)
 
@@ -223,7 +282,8 @@ Emitted when user clicks "Proceed to Booking":
     'seatDetails' => [              // Full seat information
         ['id' => 1, 'row' => 'A', 'number' => '1', 'label' => 'A1'],
     ],
-    'count' => 3                    // Number of selected seats
+    'count' => 3,                   // Number of selected seats
+    'total' => 30.00                // Total price (calculated)
 ]
 ```
 

@@ -23,7 +23,20 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-## 🗄️ Step 2: Database Setup
+## ⚙️ Step 2: Configure Pricing (Optional)
+
+Edit `config/cine-reserve.php` to configure pricing:
+
+```php
+// Pricing configuration
+'price_per_seat' => 10.00,           // Default price per seat
+'show_price_per_seat' => true,        // Display price per seat in UI
+'currency_symbol' => '$',             // Currency symbol ($, €, ₹, £, etc.)
+```
+
+**Note:** You can also override the `getPricePerSeat()` method in your custom `SelectSeats` class for dynamic pricing based on showtime, seat type, etc.
+
+## 🗄️ Step 3: Database Setup
 
 ### Create Migrations
 
@@ -145,7 +158,7 @@ Run migrations:
 php artisan migrate
 ```
 
-## 📸 Step 3: Configure File Storage for Movie Posters
+## 📸 Step 4: Configure File Storage for Movie Posters
 
 **Important:** Movie poster images must be stored on the `public` disk for proper display in the component.
 
@@ -165,7 +178,7 @@ FileUpload::make('poster_url')
 
 **Why is this required?** The movie information component displays images directly in the browser. Files stored on private disks cannot be accessed via direct URLs and will not display correctly. Using the `public` disk ensures that poster images are accessible and display properly.
 
-## 🎬 Step 4: Create Custom SelectSeats Page
+## 🎬 Step 5: Create Custom SelectSeats Page
 
 ```bash
 php artisan make:filament-page CustomSelectSeats --type=custom
@@ -251,10 +264,33 @@ class CustomSelectSeats extends SelectSeats
         parent::toggleSeat($seatId);
     }
 
+    /**
+     * Get price per seat.
+     * Override this method for custom pricing logic (e.g., different prices per showtime).
+     */
+    public function getPricePerSeat(): float
+    {
+        // Option 1: Use config value (default)
+        return (float) config('cine-reserve.price_per_seat', 10.00);
+        
+        // Option 2: Dynamic pricing based on showtime
+        // $showtime = Showtime::find($this->showtimeId);
+        // return $showtime->price_per_seat ?? 10.00;
+    }
+
+    /**
+     * Calculate total price.
+     * Override for custom pricing logic (discounts, taxes, etc.).
+     */
     public function calculateTotal(): void
     {
-        $pricePerSeat = 10.00;
-        $this->total = count($this->selectedSeats) * $pricePerSeat;
+        // Default: Simple multiplication
+        parent::calculateTotal();
+        
+        // Custom example: Add tax
+        // $baseTotal = count($this->selectedSeats) * $this->getPricePerSeat();
+        // $tax = $baseTotal * 0.10; // 10% tax
+        // $this->total = $baseTotal + $tax;
     }
 
     public function proceed(): void
@@ -313,7 +349,7 @@ class CustomSelectSeats extends SelectSeats
 }
 ```
 
-## ✅ Step 5: Test
+## ✅ Step 6: Test
 
 1. Create a movie and showtime in your database
 2. Access: `/admin/custom-select-seats?showtimeId=1`
@@ -325,9 +361,44 @@ class CustomSelectSeats extends SelectSeats
 
 - `mount()` - Load data and initialize booked seats
 - `toggleSeat()` - Add validation (prevent booking already booked seats)
-- `calculateTotal()` - Implement pricing logic
+- `getPricePerSeat()` - Return price per seat (default: reads from config)
+- `calculateTotal()` - Implement custom pricing logic (discounts, taxes, etc.)
+- `formatPrice()` - Customize price formatting (default: currency symbol + number)
 - `proceed()` - Add validation before booking
 - `handleBooking()` - Implement booking logic (save to database, notifications)
+
+### Pricing Customization
+
+The pricing feature automatically displays:
+- Total price for selected seats
+- Price per seat (if enabled in config)
+- Selected seat labels (e.g., A1, A2, B3)
+
+**Simple Pricing (All seats same price):**
+```php
+// Just configure in config/cine-reserve.php
+'price_per_seat' => 10.00,
+```
+
+**Dynamic Pricing (Different prices per showtime):**
+```php
+public function getPricePerSeat(): float
+{
+    $showtime = Showtime::find($this->showtimeId);
+    return $showtime->price_per_seat ?? 10.00;
+}
+```
+
+**Complex Pricing (With taxes/discounts):**
+```php
+public function calculateTotal(): void
+{
+    $baseTotal = count($this->selectedSeats) * $this->getPricePerSeat();
+    $discount = $baseTotal * 0.10; // 10% discount
+    $tax = ($baseTotal - $discount) * 0.08; // 8% tax
+    $this->total = $baseTotal - $discount + $tax;
+}
+```
 
 ### Publish Views
 
@@ -340,13 +411,16 @@ Customize views in `resources/views/vendor/cine-reserve/`
 ## 📝 Quick Checklist
 
 - [ ] Install package and register plugin
+- [ ] Publish and configure pricing settings in `config/cine-reserve.php`
 - [ ] Create migrations and models
 - [ ] Run migrations
 - [ ] Configure FileUpload to use `public` disk for movie posters
 - [ ] Create CustomSelectSeats page
+- [ ] Override `getPricePerSeat()` if using dynamic pricing
+- [ ] Override `calculateTotal()` if adding taxes/discounts
 - [ ] Use `Storage::disk('public')->url()` when setting `$moviePosterUrl`
 - [ ] Register page in AdminPanelProvider
-- [ ] Test seat selection and booking
+- [ ] Test seat selection, pricing display, and booking
 
 ---
 
