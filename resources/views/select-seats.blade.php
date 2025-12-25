@@ -185,7 +185,7 @@
         </div>
 
         {{-- Bottom Bar: Pricing (Left) + Proceed Button (Right) --}}
-        <div class="mt-6 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="mt-6 bg-white dark:bg-[#08080a] rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-lg">
             <div class="flex items-center justify-between gap-4">
                 {{-- Pricing Info (Left) --}}
                 <div class="flex-1">
