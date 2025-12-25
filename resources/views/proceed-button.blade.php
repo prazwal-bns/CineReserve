@@ -18,7 +18,7 @@
             :outlined="$outlined"
         >
             <span class="{{ config('cine-reserve.proceed_button.text_color', 'text-gray-900') }}">
-                {{ config('cine-reserve.proceed_button.label', __('cine-reserve::cine-reserve.proceed_button')) }}
+                {{ __('cine-reserve::cine-reserve.proceed_button_label') }}
             </span>
         </x-filament::button>
     </div>
