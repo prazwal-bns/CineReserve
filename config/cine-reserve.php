@@ -90,6 +90,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Seat Pricing Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Price per seat. All seats have the same price.
+    | Override getSeatPrice() method in your SelectSeats class for custom pricing logic.
+    |
+    */
+    'price_per_seat' => 50.00,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show Price Per Seat
+    |--------------------------------------------------------------------------
+    |
+    | Whether to display the price per seat in the UI.
+    |
+    */
+    'show_price_per_seat' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Currency Symbol
+    |--------------------------------------------------------------------------
+    |
+    | Currency symbol to display with prices (e.g., '$', '€', '₹', '£').
+    |
+    */
+    'currency_symbol' => 'Rs. ',
+
+    /*
+    |--------------------------------------------------------------------------
     | Seat Colors
     |--------------------------------------------------------------------------
     |
@@ -120,7 +151,6 @@ return [
         'icon_position' => 'after', // 'before' or 'after'
         'color' => 'warning',  // Filament button color: primary, success, warning, danger, gray, info
         'text_color' => 'text-gray-900', // Button text color (Tailwind class, e.g., 'text-white', 'text-gray-900')
-        'position' => 'right', // button position: 'left' or 'right'
         'outlined' => false, // whether to use an outlined button
     ],
 ];
