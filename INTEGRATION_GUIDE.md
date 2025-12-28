@@ -158,7 +158,23 @@ Run migrations:
 php artisan migrate
 ```
 
-## 📸 Step 4: Configure File Storage for Movie Posters
+## 📸 Step 4: Movie Information Component
+
+### Sample Values
+
+The movie information component automatically displays sample/demo values when no data is provided:
+- **Title**: "Sample Movie Title"
+- **Genre**: "Action"
+- **Duration**: "120 min"
+- **Rating**: "PG-13"
+- **Date**: Current date (formatted)
+- **Start Time**: "7:00 PM"
+- **End Time**: "9:30 PM"
+- **Theater**: "Theater 1"
+
+This helps you visualize the component structure before implementing your own data. Once you set the movie properties in your `SelectSeats` class, the actual data will replace the sample values.
+
+### Configure File Storage for Movie Posters
 
 **Important:** Movie poster images must be stored on the `public` disk for proper display in the component.
 
@@ -400,13 +416,23 @@ public function calculateTotal(): void
 }
 ```
 
-### Publish Views
+### Customize Views
+
+To customize the appearance and layout of the seat selection interface, publish the views:
 
 ```bash
 php artisan vendor:publish --tag=cine-reserve-views
 ```
 
-Customize views in `resources/views/vendor/cine-reserve/`
+This copies all view files to `resources/views/vendor/cine-reserve/` where you can modify them:
+
+- `select-seats.blade.php` - Main seat selection page layout
+- `components/movie-information.blade.php` - Movie information display component
+- `pricing-display.blade.php` - Pricing information display
+- `proceed-button.blade.php` - Proceed to booking button
+- `screen.blade.php` - Screen indicator component
+
+After publishing, edit these files in `resources/views/vendor/cine-reserve/` to match your design requirements. The package will automatically use your customized views instead of the default ones.
 
 ## 📝 Quick Checklist
 
