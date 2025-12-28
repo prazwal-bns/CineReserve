@@ -2,6 +2,7 @@
 
 namespace Przwl\CineReserve\View\Components;
 
+use Illuminate\Support\Str;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -23,7 +24,7 @@ class MovieInformation extends Component
     public function __construct(
         public ?string $posterUrl = null,
         public ?string $title = null,
-        public ?string $genre = null,
+        public string|array|null $genre = null,
         public ?string $duration = null,
         public ?string $rating = null,
         public ?string $date = null,
@@ -76,6 +77,28 @@ class MovieInformation extends Component
     public function getDisplayValue(string $property, string $sampleValue): string
     {
         return !empty($this->$property) ? $this->$property : $sampleValue;
+    }
+
+    public function getGenres(): array
+    {
+        if (empty($this->genre)) {
+            return $this->hasData() ? [] : ['Action'];
+        }
+
+        $genres = is_array($this->genre) ? $this->genre : [$this->genre];
+
+        return array_map(function ($genre) {
+            if (is_object($genre)) {
+                if (method_exists($genre, 'getLabel')) {
+                    return Str::title($genre->getLabel());
+                }
+                if (method_exists($genre, 'value')) {
+                    return Str::title($genre->value);
+                }
+                return Str::title((string) $genre);
+            }
+            return Str::title((string) $genre);
+        }, $genres);
     }
 
     /**

@@ -34,10 +34,12 @@
                     @endif
                     <div class="flex flex-wrap items-center gap-3 text-sm">
                         @if (($fieldVisibility['genre'] ?? true))
-                            <span
-                                class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium">
-                                {{ $hasData() ? ($genre ?? '') : 'Action' }}
-                            </span>
+                            @foreach ($getGenres() as $genreItem)
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium">
+                                    {{ $genreItem }}
+                                </span>
+                            @endforeach
                         @endif
                         @if (($fieldVisibility['duration'] ?? true))
                             <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1">
