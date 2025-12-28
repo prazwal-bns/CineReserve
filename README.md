@@ -1,6 +1,6 @@
 # CineReserve - Filament Movie Seat Selection Plugin
 
-A seamless, user-friendly Filament plugin for adding interactive movie seat selection and booking functionality to any Laravel application.
+A seamless, user-friendly plugin for adding interactive movie seat selection and booking functionality to any Laravel application.
 
 ## 🎬 Features
 
