@@ -50,6 +50,27 @@ php artisan vendor:publish --tag=cine-reserve-config
 Edit `config/cine-reserve.php`:
 
 ```php
+// Navigation
+'register_navigation' => false,        // Show/hide navigation item
+
+// Movie Information
+'show_movie_information' => true,      // Show/hide movie information component
+'movie_information_fields' => [
+    'poster' => true,
+    'title' => true,
+    'genre' => true,
+    'duration' => true,
+    'rating' => true,
+    'date' => true,
+    'start_time' => true,
+    'end_time' => true,
+    'theater' => true,
+],
+
+// Screen & Layout
+'show_screen' => true,                 // Show/hide screen indicator
+'select_seats_title_position' => 'left', // 'left', 'center', or 'right'
+
 // Seat layout
 'rows' => ['A', 'B', 'C', 'D', 'E'],
 'seats_per_row' => 8,
@@ -64,23 +85,10 @@ Edit `config/cine-reserve.php`:
     'booked' => 'gray',
 ],
 
-// Movie information fields visibility
-'movie_information_fields' => [
-    'poster' => true,
-    'title' => true,
-    'genre' => true,
-    'duration' => true,
-    'rating' => true,
-    'date' => true,
-    'start_time' => true,
-    'end_time' => true,
-    'theater' => true,
-],
-
 // Pricing configuration
-'price_per_seat' => 10.00,           // Price per seat (all seats same price)
-'show_price_per_seat' => true,        // Display price per seat in UI
-'currency_symbol' => '$',             // Currency symbol for price display
+'price_per_seat' => 10.00,            // Price per seat (all seats same price)
+'show_price_per_seat' => true,         // Display price per seat in UI
+'currency_symbol' => '$',              // Currency symbol for price display
 ```
 
 ## 🚀 Quick Start
@@ -144,17 +152,6 @@ class CustomSelectSeats extends SelectSeats
             ->toArray();
     }
 
-    public function getPricePerSeat(): float
-    {
-        // Override to implement custom pricing logic (e.g., different prices per showtime)
-        return (float) config('cine-reserve.price_per_seat', 10.00);
-    }
-
-    public function calculateTotal(): void
-    {
-        // Automatically calculates total based on selected seats and price per seat
-        parent::calculateTotal();
-    }
 
     public function proceed(): void
     {
@@ -201,7 +198,7 @@ For detailed integration instructions, database migrations, models, and advanced
 
 CineReserve includes a built-in pricing display system that shows:
 - **Total Price**: Automatically calculated based on selected seats
-- **Price Per Seat**: Configurable via config or override method
+- **Price Per Seat**: Configurable via config
 - **Selected Seat Details**: Displays all selected seat labels (e.g., A1, A2, B3)
 - **Currency Formatting**: Customizable currency symbol
 
@@ -215,32 +212,7 @@ Configure pricing in `config/cine-reserve.php`:
 'currency_symbol' => '$',          // Currency symbol ($, €, ₹, £, etc.)
 ```
 
-### Custom Pricing Logic
-
-Override the `getPricePerSeat()` method for dynamic pricing:
-
-```php
-public function getPricePerSeat(): float
-{
-    // Example: Different prices based on showtime
-    $showtime = Showtime::find($this->showtimeId);
-    return $showtime->price_per_seat ?? 10.00;
-    
-    // Example: Premium seats cost more
-    // return $this->isPremiumSeat($seatId) ? 15.00 : 10.00;
-}
-```
-
-The `calculateTotal()` method automatically multiplies selected seats by the price per seat. Override it for complex pricing (discounts, taxes, etc.):
-
-```php
-public function calculateTotal(): void
-{
-    $baseTotal = count($this->selectedSeats) * $this->getPricePerSeat();
-    $tax = $baseTotal * 0.10; // 10% tax
-    $this->total = $baseTotal + $tax;
-}
-```
+The pricing is automatically calculated based on the number of selected seats multiplied by the price per seat configured in the config file.
 
 ## 🎨 Customization
 
@@ -250,9 +222,6 @@ The `SelectSeats` class is designed to be easily extensible:
 
 - `mount()` - Load data and initialize booked seats
 - `toggleSeat()` - Add validation (e.g., prevent booking already booked seats)
-- `getPricePerSeat()` - Return price per seat (default: reads from config)
-- `calculateTotal()` - Implement custom pricing logic (discounts, taxes, etc.)
-- `formatPrice()` - Customize price formatting (default: currency symbol + number)
 - `proceed()` - Add validation before booking
 - `handleBooking()` - Implement booking logic (save to database, notifications, etc.)
 
