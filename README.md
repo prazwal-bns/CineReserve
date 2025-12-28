@@ -303,7 +303,7 @@ Set these properties in your `SelectSeats` component:
 
 - `$moviePosterUrl` - URL or path to movie poster
 - `$movieTitle` - Movie title
-- `$movieGenre` - Movie genre
+- `$movieGenre` - Movie genre (string, array of strings, or array of enum objects)
 - `$movieDuration` - Movie duration
 - `$movieRating` - Movie rating
 - `$movieDate` - Show date

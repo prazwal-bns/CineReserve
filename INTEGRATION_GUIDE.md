@@ -244,6 +244,8 @@ class CustomSelectSeats extends SelectSeats
         $this->moviePosterUrl = $movie->poster_url 
             ? Storage::disk('public')->url($movie->poster_url) 
             : null;
+        
+        // Handle genre (supports single string, array of strings, or array of enum objects)
         $this->movieGenre = $movie->genre;
         $this->movieDuration = $movie->duration ? $movie->duration . ' min' : null;
         $this->movieRating = $movie->rating;
