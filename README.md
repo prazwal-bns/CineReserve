@@ -256,13 +256,23 @@ The `SelectSeats` class is designed to be easily extensible:
 - `proceed()` - Add validation before booking
 - `handleBooking()` - Implement booking logic (save to database, notifications, etc.)
 
-### Publish Views
+### Customize Views
+
+To customize the appearance and layout of the seat selection interface, you can publish the views:
 
 ```bash
 php artisan vendor:publish --tag=cine-reserve-views
 ```
 
-Customize views in `resources/views/vendor/cine-reserve/`
+This will copy all view files to `resources/views/vendor/cine-reserve/` where you can modify them:
+
+- `select-seats.blade.php` - Main seat selection page layout
+- `components/movie-information.blade.php` - Movie information display component
+- `pricing-display.blade.php` - Pricing information display
+- `proceed-button.blade.php` - Proceed to booking button
+- `screen.blade.php` - Screen indicator component
+
+After publishing, edit these files in `resources/views/vendor/cine-reserve/` to match your design requirements. The package will automatically use your customized views instead of the default ones.
 
 ### Publish Translations
 
@@ -301,6 +311,20 @@ Set these properties in your `SelectSeats` component:
 - `$movieEndTime` - Show end time
 - `$movieTheater` - Theater name
 - `$moviePosterAlt` - Alt text for poster
+
+### Sample Values
+
+When no movie information is provided, the component automatically displays sample/demo values so you can see how it looks:
+- **Title**: "Sample Movie Title"
+- **Genre**: "Action"
+- **Duration**: "120 min"
+- **Rating**: "PG-13"
+- **Date**: Current date (formatted)
+- **Start Time**: "7:00 PM"
+- **End Time**: "9:30 PM"
+- **Theater**: "Theater 1"
+
+This helps you visualize the component structure before implementing your own data. Once you set the movie properties, the actual data will replace the sample values.
 
 ## ⚠️ Important: File Storage Configuration
 
