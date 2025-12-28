@@ -28,28 +28,30 @@
                 {{-- Title and Meta Info --}}
                 <div>
                     @if (($fieldVisibility['title'] ?? true))
-                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">{{ $title ?? 'Movie Title' }}</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                            {{ $hasData() ? ($title ?? 'Movie Title') : 'Sample Movie Title' }}
+                        </h2>
                     @endif
                     <div class="flex flex-wrap items-center gap-3 text-sm">
-                        @if (($fieldVisibility['genre'] ?? true) && $genre)
+                        @if (($fieldVisibility['genre'] ?? true))
                             <span
                                 class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 font-medium">
-                                {{ $genre }}
+                                {{ $hasData() ? ($genre ?? '') : 'Action' }}
                             </span>
                         @endif
-                        @if (($fieldVisibility['duration'] ?? true) && $duration)
+                        @if (($fieldVisibility['duration'] ?? true))
                             <span class="text-gray-600 dark:text-gray-400 flex items-center gap-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                {{ $duration }}
+                                {{ $hasData() ? ($duration ?? '') : '120 min' }}
                             </span>
                         @endif
-                        @if (($fieldVisibility['rating'] ?? true) && $rating)
+                        @if (($fieldVisibility['rating'] ?? true))
                             <span
                                 class="inline-flex items-center px-2.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium">
-                                {{ $rating }}
+                                {{ $hasData() ? ($rating ?? '') : 'PG-13' }}
                             </span>
                         @endif
                     </div>
@@ -59,7 +61,7 @@
                 @if (($fieldVisibility['date'] ?? true) || ($fieldVisibility['start_time'] ?? true) || ($fieldVisibility['end_time'] ?? true) || ($fieldVisibility['theater'] ?? true))
                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            @if (($fieldVisibility['date'] ?? true) && $date)
+                            @if (($fieldVisibility['date'] ?? true))
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -74,11 +76,13 @@
                                         <p
                                             class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold mb-1">
                                             Date</p>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $date }}</p>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                            {{ $hasData() ? ($date ?? '') : now()->format('F j, Y') }}
+                                        </p>
                                     </div>
                                 </div>
                             @endif
-                            @if (($fieldVisibility['start_time'] ?? true) && $startTime)
+                            @if (($fieldVisibility['start_time'] ?? true))
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -93,11 +97,12 @@
                                             class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold mb-1">
                                             Start Time</p>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $startTime }}</p>
+                                            {{ $hasData() ? ($startTime ?? '') : '7:00 PM' }}
+                                        </p>
                                     </div>
                                 </div>
                             @endif
-                            @if (($fieldVisibility['end_time'] ?? true) && $endTime)
+                            @if (($fieldVisibility['end_time'] ?? true))
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -112,11 +117,12 @@
                                             class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold mb-1">
                                             End Time</p>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $endTime }}</p>
+                                            {{ $hasData() ? ($endTime ?? '') : '9:30 PM' }}
+                                        </p>
                                     </div>
                                 </div>
                             @endif
-                            @if (($fieldVisibility['theater'] ?? true) && $theater)
+                            @if (($fieldVisibility['theater'] ?? true))
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -132,7 +138,8 @@
                                             class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-semibold mb-1">
                                             Theater</p>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $theater }}</p>
+                                            {{ $hasData() ? ($theater ?? '') : 'Theater 1' }}
+                                        </p>
                                     </div>
                                 </div>
                             @endif

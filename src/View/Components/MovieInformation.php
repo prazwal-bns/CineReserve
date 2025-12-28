@@ -55,6 +55,30 @@ class MovieInformation extends Component
     }
 
     /**
+     * Check if there's any meaningful data to display
+     */
+    public function hasData(): bool
+    {
+        return !empty($this->title) 
+            || !empty($this->posterUrl)
+            || !empty($this->genre)
+            || !empty($this->duration)
+            || !empty($this->rating)
+            || !empty($this->date)
+            || !empty($this->startTime)
+            || !empty($this->endTime)
+            || !empty($this->theater);
+    }
+
+    /**
+     * Get display value with fallback to sample data
+     */
+    public function getDisplayValue(string $property, string $sampleValue): string
+    {
+        return !empty($this->$property) ? $this->$property : $sampleValue;
+    }
+
+    /**
      * Get the view / contents that represent the component.
      */
     public function render(): View
