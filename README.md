@@ -4,7 +4,7 @@ A seamless, user-friendly plugin for adding interactive movie seat selection and
 
 ## 🎬 Features
 
-- **Interactive Seat Selection**: Beautiful, animated seat selection interface
+- **Interactive Seat Selection**: Beautiful, Customizable animated seat selection interface
 - **Movie Information Display**: Showcase movie details.
 - **Customizable Colors**: Choose seat colors for booked, available and selected seats.
 - **Dynamic Layout**: Configure rows and seats per row via config
