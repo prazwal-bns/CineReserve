@@ -17,9 +17,8 @@ A seamless, user-friendly plugin for adding interactive movie seat selection and
 
 ### Video Demonstration
 
-[![CineReserve Demo Video](Plugin-Images/screen-only.png)](Plugin-Images/cine-reserve.mp4)
+![CineReserve Demo](Plugin-Images/cine-reserve.gif)
 
-*Click the image above to watch the demo video*
 
 ### Screenshots
 
