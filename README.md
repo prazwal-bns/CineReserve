@@ -13,21 +13,6 @@ A seamless, user-friendly plugin for adding interactive movie seat selection and
 - **Dark Mode Support**: Fully supports Filament's dark mode
 - **Extensible**: Easy to extend and customize
 
-## 📸 Preview
-
-### Video Demonstration
-
-![CineReserve Demo](Plugin-Images/cine-reserve.gif)
-
-
-### Screenshots
-
-#### Light Mode
-![CineReserve Light Mode](Plugin-Images/full-area.png)
-
-#### Dark Mode
-![CineReserve Dark Mode](Plugin-Images/full-area(dark).png)
-
 ## 📦 Installation
 
 ### Install via Composer
@@ -202,8 +187,22 @@ class CustomSelectSeats extends SelectSeats
             ->send();
     }
 }
-```
 
+```
+## 📸 Preview
+
+### Video Demonstration
+
+![CineReserve Demo](Plugin-Images/cine-reserve.gif)
+
+
+### Screenshots
+
+#### Light Mode
+![CineReserve Light Mode](Plugin-Images/full-area.png)
+
+#### Dark Mode
+![CineReserve Dark Mode](Plugin-Images/full-area(dark).png)
 
 ## 📖 Complete Integration Guide
 
