@@ -28,9 +28,6 @@ A seamless, user-friendly plugin for adding interactive movie seat selection and
 #### Dark Mode
 ![CineReserve Dark Mode](Plugin-Images/full-area(dark).png)
 
-#### Seat Selection View
-![CineReserve Seat Selection](Plugin-Images/screen-only.png)
-
 ## 📦 Installation
 
 ### Install via Composer
